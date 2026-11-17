@@ -1,0 +1,8 @@
+[package]
+name = "elaichi"
+version = "0.1.0"
+edition = "2021"
+authors = ["Elaichi Team"]
+description = "A dual-engine programming language with cooperative static and dynamic stacks"
+
+[dependencies]
