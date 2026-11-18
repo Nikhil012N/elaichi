@@ -1,109 +1,98 @@
-# Architecture & The Dual-Stack Execution Model
+# How Elaichi Works: Under the Hood
 
-This document outlines the internal architecture of the Elaichi execution model, explaining how AST bifurcation coordinates unboxed static execution and tagged dynamic bytecode evaluation.
-
----
-
-## The AST Bifurcation Pipeline
-
-Elaichi uses a bifurcation compiler pass to resolve the gradual typing overhead problem. Rather than boxing all values or relying on foreign function interfaces (FFI), the front-end compiler partitions program subtrees into two independent runtime representations:
-
-```
-                       Source Code (.el)
-                              │
-                    Lexer & AST Parser
-                              │
-                    AST Validation Pass
-                              │
-                      Bifurcation Pass
-                     ┌────────┴────────┐
-                     ▼                 ▼
-             Static Functions   Dynamic Functions
-                     │                 │
-             Static Codegen     Bytecode Compiler
-                     │                 │
-                     ▼                 ▼
-            StaticFunctionCode  DynamicBytecodeChunk
-                     │                 │
-             ┌───────▼───────┐ ┌───────▼───────┐
-             │  Static Stack │ │ Dynamic Stack │
-             │  (Direct ABI) │ │  (Tagged VM)  │
-             └───────┬───────┘ └───────┬───────┘
-                     └────────┬────────┘
-                              │
-                     Inter-Stack Bridge
-```
+This page explains how Elaichi runs your code under the hood in simple, clear terms.
 
 ---
 
-## 1. Static Execution Stack
+## 1. The Big Picture: Why Dual-Stack?
 
-Functions designated with the `static` keyword are compiled into unboxed machine frames:
+In most popular programming languages, you run into a trade-off:
+* **Dynamically typed code** (like normal JavaScript) gives you great flexibility, but the computer has to constantly check what type every value is at runtime, creating memory overhead and slower math calculations.
+* **Statically typed code** (like C or Rust) runs at maximum hardware speed because the types are locked in, but it can feel rigid and take more time to build.
 
-* **Direct Frame Mapping**: Local variables are indexed by integer register offsets.
-* **Unboxed Primitives**: Values of type `i64`, `f64`, and `bool` reside directly in contiguous memory slots without pointers, headers, or runtime tags.
-* **Scope-Bound Deallocation**: Memory for stack frames is allocated and released deterministically upon function entry and exit.
-* **Instruction Dispatch**: Evaluates linear sequences of `StaticInst` opcodes.
+**Elaichi solves this with AST Bifurcation.**
 
-### Static Instruction Set (`StaticInst`)
+"Bifurcation" is just a fancy word for **splitting something into two branches**. When Elaichi reads your source code file (`.el`), it reads every function and automatically divides them into two separate execution tracks:
 
-```rust
-pub enum StaticInst {
-    ConstI64(i64),
-    ConstF64(f64),
-    ConstBool(bool),
-    LoadLocal(usize),
-    StoreLocal(usize),
-    I64Add,
-    I64Sub,
-    I64Mul,
-    I64Div,
-    I64Mod,
-    I64Eq,
-    I64Neq,
-    I64Lt,
-    I64Le,
-    I64Gt,
-    I64Ge,
-    JumpIfFalse(usize),
-    Jump(usize),
-    Call(String, usize),
-    Return,
+```text
+                  Your Code File (.el)
+                          │
+                   Elaichi Compiler
+                  (Reads the syntax)
+                          │
+                  The Bifurcation Split
+                 ┌────────┴────────┐
+                 ▼                 ▼
+         Static Functions    Dynamic Functions
+         (Marked 'static')   (Normal functions)
+                 │                 │
+                 ▼                 ▼
+          [Static Stack]    [Dynamic Stack]
+         (Direct CPU speed)  (Flexible VM)
+                 │                 │
+                 └────────┬────────┘
+                          │
+                  The Bridge Thunk
+              (Converts values safely)
+```
+
+---
+
+## 2. Track 1: The Static Stack (Raw Speed)
+
+When you define a function with `static`, you are telling Elaichi: *"I know the exact numbers and types here. Don't waste time checking them at runtime."*
+
+```javascript
+static function calculateSum(a: i64, b: i64): i64 {
+    return a + b;
 }
 ```
 
----
-
-## 2. Dynamic Execution Stack
-
-Standard function blocks compile to bytecode executed by a register virtual machine:
-
-* **Dynamic Value Variant**: Stored using the tagged enum `DynValue`:
-  ```rust
-  pub enum DynValue {
-      Nil,
-      Bool(bool),
-      Int(i64),
-      Float(f64),
-      Str(String),
-      List(Vec<DynValue>),
-      Map(HashMap<String, DynValue>),
-  }
-  ```
-* **Dynamic Bytecode Opcodes (`OpCode`)**:
-  * Variable Access: `LoadLocal`, `StoreLocal`, `LoadGlobal`, `StoreGlobal`.
-  * Collections: `BuildList`, `BuildMap`, `IndexGet`, `IndexSet`, `FieldGet`, `FieldSet`.
-  * Conversions: `Cast(ElaichiType)`.
-  * Control Flow: `Jump`, `JumpIfFalse`, `Call`, `Return`.
-  * I/O Subsystem: `TerminalPrint`, `TerminalPrintln`, `TerminalWarn`, `TerminalError`, `TerminalClear`.
+* **What happens behind the scenes:**
+  1. The compiler takes `a` and `b` and places them directly into computer CPU memory slots (registers).
+  2. No memory garbage is created.
+  3. The addition happens in a single CPU instruction cycle.
 
 ---
 
-## 3. The Inter-Stack Bridge
+## 3. Track 2: The Dynamic Stack (Everyday Flexibility)
 
-The boundary between the dynamic stack and static stack is managed by the `Bridge` subsystem (`src/bridge.rs`):
+When you write a normal function without `static`, you get the convenience of everyday scripting:
 
-1. **Invocation from Dynamic Scopes**: When a dynamic function executes a `Call` to a static subroutine, the bridge checks the argument types against the target static parameters.
-2. **Unboxing**: Converts tagged `DynValue` variants into raw `StaticValue` primitives.
-3. **Execution**: Evaluates the static frame to completion.
-4. **Boxing**: Converts the return `StaticValue` into a `DynValue` and pushes it onto the dynamic VM stack.
+```javascript
+function greetUser(profile) {
+    terminal.println("Welcome back, " + profile.name);
+}
+```
+
+* **What happens behind the scenes:**
+  1. The function compiles into bytecode instructions.
+  2. Values are stored as tagged objects (`DynValue`) that can change freely.
+  3. You can create lists, dictionaries, and nested objects without worrying about memory management.
+
+---
+
+## 4. The Bridge: How the Two Tracks Talk to Each Other
+
+What happens when your flexible, dynamic code wants to use a high-speed static function?
+
+```javascript
+static function fastMath(n: i64): i64 {
+    return n * 2;
+}
+
+function main() {
+    let input = 21;
+    // Calling a static function from normal code:
+    let output = fastMath(input);
+    terminal.println("Result: " + output);
+}
+```
+
+Elaichi handles this through an **Inter-Stack Bridge**:
+1. When `main()` calls `fastMath(input)`, the bridge checks that `input` is a valid integer.
+2. It strips away the dynamic wrapper (unboxing) and passes the raw number directly into the CPU register.
+3. The static function calculates `21 * 2 = 42` instantly.
+4. The bridge wraps the result (`42`) and hands it right back to `main()`.
+
+You never have to write messy conversion code or foreign function wrappers yourself—the compiler does it for you automatically.

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 150" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
     <linearGradient id="pod" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#D9F64D"/>
@@ -15,127 +15,107 @@
       <stop offset="0%" stop-color="#91C523"/>
       <stop offset="100%" stop-color="#527F13"/>
     </linearGradient>
-
-    <style>
-      @import url('https://db.onlinewebfonts.com/c/89d204f4e7e947112f736c6e426eeb0e?family=Fighting+Spirit+TBS+Italic');
-
-      .fighting-spirit-logo {
-        font-family: 'Fighting Spirit TBS Italic', 'Fighting Spirit', Impact, -apple-system, sans-serif;
-        font-style: italic;
-        font-weight: 900;
-        letter-spacing: 2px;
-        text-transform: lowercase;
-      }
-    </style>
   </defs>
 
-  <!-- Mascot Symbol (scaled to fit alongside wordmark) -->
-  <g transform="translate(10, 10) scale(0.25)">
-    <!-- Cardamom outer body -->
-    <path
-      d="M105 367
-         C92 342 103 290 119 244
-         C145 171 212 124 293 111
-         C335 104 356 104 376 83
-         C390 68 413 76 415 96
-         C417 111 402 125 402 142
-         C403 164 421 199 416 247
-         C407 319 357 380 281 403
-         C224 420 163 409 130 403
-         C111 400 93 388 105 367Z"
-      fill="url(#pod)"
-      stroke="#241509"
-      stroke-width="8"
-      stroke-linejoin="round"
-    />
+  <!-- Transparent Background -->
 
-    <!-- Top highlight -->
-    <path
-      d="M112 365
-         C109 301 136 222 189 173
-         C235 130 296 116 353 107
-         C375 103 388 90 399 87
-         C375 124 327 153 282 171
-         C205 202 158 268 112 365Z"
-      fill="url(#highlight)"
-      opacity=".9"
-    />
+  <!-- Cardamom outer body -->
+  <path
+    d="M105 367
+       C92 342 103 290 119 244
+       C145 171 212 124 293 111
+       C335 104 356 104 376 83
+       C390 68 413 76 415 96
+       C417 111 402 125 402 142
+       C403 164 421 199 416 247
+       C407 319 357 380 281 403
+       C224 420 163 409 130 403
+       C111 400 93 388 105 367Z"
+    fill="url(#pod)"
+    stroke="#241509"
+    stroke-width="8"
+    stroke-linejoin="round"
+  />
 
-    <!-- Central organic ridge -->
-    <path
-      d="M118 378
-         C164 301 201 228 277 183
-         C325 155 368 131 400 91
-         C384 171 346 235 302 281
-         C255 330 191 365 118 378Z"
-      fill="#83B51F"
-      opacity=".65"
-    />
+  <!-- Top highlight -->
+  <path
+    d="M112 365
+       C109 301 136 222 189 173
+       C235 130 296 116 353 107
+       C375 103 388 90 399 87
+       C375 124 327 153 282 171
+       C205 202 158 268 112 365Z"
+    fill="url(#highlight)"
+    opacity=".9"
+  />
 
-    <!-- Lower green shading -->
-    <path
-      d="M111 376
-         C188 372 257 349 314 307
-         C366 267 400 212 413 153
-         C423 226 402 302 348 355
-         C291 410 192 418 130 401Z"
-      fill="url(#shadow)"
-      opacity=".72"
-    />
+  <!-- Central organic ridge -->
+  <path
+    d="M118 378
+       C164 301 201 228 277 183
+       C325 155 368 131 400 91
+       C384 171 346 235 302 281
+       C255 330 191 365 118 378Z"
+    fill="#83B51F"
+    opacity=".65"
+  />
 
-    <!-- Left curved ridge -->
-    <path
-      d="M128 355 C148 289 170 237 217 195"
-      fill="none"
-      stroke="#75A91D"
-      stroke-width="7"
-      stroke-linecap="round"
-      opacity=".65"
-    />
+  <!-- Lower green shading -->
+  <path
+    d="M111 376
+       C188 372 257 349 314 307
+       C366 267 400 212 413 153
+       C423 226 402 302 348 355
+       C291 410 192 418 130 401Z"
+    fill="url(#shadow)"
+    opacity=".72"
+  />
 
-    <!-- Glossy highlight -->
-    <ellipse
-      cx="205" cy="178"
-      rx="34" ry="9"
-      transform="rotate(-43 205 178)"
-      fill="#F4FF9A"
-      opacity=".85"
-    />
+  <!-- Left curved ridge -->
+  <path
+    d="M128 355 C148 289 170 237 217 195"
+    fill="none"
+    stroke="#75A91D"
+    stroke-width="7"
+    stroke-linecap="round"
+    opacity=".65"
+  />
 
-    <!-- Eyes -->
-    <g fill="#21140E">
-      <circle cx="177" cy="268" r="23"/>
-      <circle cx="316" cy="256" r="23"/>
-    </g>
+  <!-- Glossy highlight -->
+  <ellipse
+    cx="205" cy="178"
+    rx="34" ry="9"
+    transform="rotate(-43 205 178)"
+    fill="#F4FF9A"
+    opacity=".85"
+  />
 
-    <!-- Eye reflections -->
-    <g fill="#FFFFFF">
-      <circle cx="172" cy="260" r="7"/>
-      <circle cx="310" cy="248" r="7"/>
-    </g>
-
-    <!-- Smile -->
-    <path
-      d="M222 284
-         C224 306 251 314 267 301
-         C273 296 276 289 277 282"
-      fill="none"
-      stroke="#21140E"
-      stroke-width="9"
-      stroke-linecap="round"
-    />
-
-    <!-- Rosy cheeks -->
-    <g fill="#FF9291" opacity=".9">
-      <ellipse cx="150" cy="298" rx="20" ry="15"/>
-      <ellipse cx="344" cy="280" rx="20" ry="15"/>
-    </g>
+  <!-- Eyes -->
+  <g fill="#21140E">
+    <circle cx="177" cy="268" r="23"/>
+    <circle cx="316" cy="256" r="23"/>
   </g>
 
-  <!-- Wordmark in Fighting Spirit Font -->
-  <g transform="skewX(-10) translate(150, 0)">
-    <text x="10" y="105" class="fighting-spirit-logo" font-size="105">
-      <tspan fill="#A9D82B">elai</tspan><tspan fill="#FFFFFF">chi</tspan>
-    </text>
+  <!-- Eye reflections -->
+  <g fill="#FFFFFF">
+    <circle cx="172" cy="260" r="7"/>
+    <circle cx="310" cy="248" r="7"/>
+  </g>
+
+  <!-- Smile -->
+  <path
+    d="M222 284
+       C224 306 251 314 267 301
+       C273 296 276 289 277 282"
+    fill="none"
+    stroke="#21140E"
+    stroke-width="9"
+    stroke-linecap="round"
+  />
+
+  <!-- Rosy cheeks -->
+  <g fill="#FF9291" opacity=".9">
+    <ellipse cx="150" cy="298" rx="20" ry="15"/>
+    <ellipse cx="344" cy="280" rx="20" ry="15"/>
   </g>
 </svg>

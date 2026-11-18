@@ -6,8 +6,9 @@
   <title>Elaichi — The Dual-Stack JavaScript Runtime</title>
   <link rel="icon" type="image/svg+xml" href="elaichi-icon.svg">
   
-  <!-- Official Docsify Dark Theme as rock-solid base -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/dark.css">
+  <!-- Base Engine Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
 
   <style>
@@ -15,25 +16,28 @@
       --font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --code-font: "JetBrains Mono", Consolas, monospace;
 
-      /* Bun Dark Palette */
-      --bg-canvas: #0c0d0e;
-      --bg-sidebar: #08090a;
-      --bg-surface: #121417;
-      --bg-code: #111317;
-      --border-subtle: #1e2227;
-      --border-hover: rgba(181, 232, 83, 0.4);
+      /* High-Precision Dark Engine Theme */
+      --bg-canvas: #0a0a0a;
+      --bg-header: rgba(10, 10, 10, 0.85);
+      --bg-sidebar: #0a0a0a;
+      --bg-surface: #121212;
+      --bg-code: #000000;
+      --border-subtle: #222222;
+      --border-hover: #333333;
 
-      /* Accents */
-      --accent-lime: #B5E853;
-      --accent-orange: #FF8364;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
+      /* Accents & Contrast */
+      --accent-lime: #a3e635;
+      --accent-orange: #fb923c;
+      --accent-pink: #f472b6;
+      --accent-cyan: #38bdf8;
+      --accent-yellow: #fde047;
+      --text-main: #ededed;
+      --text-muted: #888888;
+      --text-subtle: #555555;
     }
 
-    /* Prevent horizontal page shifts when toggling sidebar */
-    html, body {
-      overflow-x: hidden !important;
-      position: relative !important;
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -41,54 +45,171 @@
       color: var(--text-main) !important;
       font-family: var(--font-family) !important;
       -webkit-font-smoothing: antialiased;
-      transform: none !important;
-      transition: none !important;
+      -moz-osx-font-smoothing: grayscale;
       margin: 0 !important;
       padding: 0 !important;
-    }
-
-    body.close {
-      transform: none !important;
+      overflow-x: hidden !important;
+      letter-spacing: -0.01em;
     }
 
     /* ==========================================================================
-       RIGHT SIDEBAR ARCHITECTURE (Fully Responsive Drawer & Desktop Dock)
+       TOP GLOBAL HEADER (Fixed, Translucent Engine Header)
        ========================================================================== */
-    .sidebar {
-      left: auto !important;
-      right: 0 !important;
-      width: 280px !important;
-      height: 100vh !important;
+    .site-header {
       position: fixed !important;
       top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100%;
+      height: 60px;
+      background: var(--bg-header);
+      backdrop-filter: saturate(180%) blur(16px);
+      -webkit-backdrop-filter: saturate(180%) blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Mobile Hamburger Trigger inside the Header */
+    .mobile-menu-btn {
+      display: none;
+      background: #141414;
+      border: 1px solid var(--border-subtle);
+      border-radius: 2px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      padding: 0;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: #ededed;
+      border-radius: 0;
+    }
+
+    .site-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .site-brand:hover {
+      opacity: 0.85;
+    }
+
+    .site-brand img {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .site-brand span {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .site-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .site-nav a:hover {
+      color: #ffffff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .github-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #ededed !important;
+      font-size: 0.86rem;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 7px 15px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 2px;
+      background: #111111;
+      transition: all 0.15s ease;
+    }
+
+    .github-btn:hover {
+      color: #ffffff !important;
+      background: #1c1c1c;
+      border-color: #444444;
+    }
+
+    .github-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: #ffffff !important;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       SIDEBAR & HIERARCHICAL NAVIGATION
+       ========================================================================== */
+    .sidebar {
+      position: fixed !important;
+      top: 60px !important;
       bottom: 0 !important;
+      right: 0 !important;
+      left: auto !important;
+      width: 280px !important;
+      height: calc(100vh - 60px) !important;
       background-color: var(--bg-sidebar) !important;
       border-left: 1px solid var(--border-subtle) !important;
       border-right: none !important;
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      z-index: 100 !important;
-      box-shadow: -6px 0 30px rgba(0, 0, 0, 0.45) !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      z-index: 9999 !important;
       overflow-y: auto !important;
       -webkit-overflow-scrolling: touch !important;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    /* Logo inside Sidebar */
+    /* Hide the built-in Docsify sidebar logo since we have the top header */
     .app-name-link {
-      padding: 24px 20px 18px !important;
-      display: flex !important;
-      align-items: center !important;
-      text-decoration: none !important;
+      display: none !important;
     }
 
-    .app-name-link img {
-      width: 170px !important;
-      height: auto !important;
-      background: transparent !important;
-    }
-
-    /* Sidebar Navigation Links */
     .sidebar-nav {
-      padding: 0 16px 40px !important;
+      padding: 24px 16px 64px !important;
     }
 
     .sidebar-nav ul {
@@ -97,79 +218,138 @@
       padding: 0 !important;
     }
 
-    .sidebar-nav li {
+    /* Primary / Parent Items */
+    .sidebar-nav > ul > li {
       margin: 4px 0 !important;
     }
 
-    .sidebar-nav a {
+    .sidebar-nav > ul > li > a {
       display: block !important;
-      font-size: 0.92rem !important;
-      font-weight: 500 !important;
-      color: var(--text-muted) !important;
-      padding: 8px 14px !important;
-      border-radius: 2px !important;
-      text-decoration: none !important;
-      transition: all 0.15s ease !important;
-    }
-
-    .sidebar-nav a:hover {
-      color: #ffffff !important;
-      background: rgba(255, 255, 255, 0.05) !important;
-    }
-
-    .sidebar-nav li.active > a {
-      color: var(--accent-lime) !important;
-      background: rgba(181, 232, 83, 0.08) !important;
+      font-size: 0.88rem !important;
       font-weight: 600 !important;
-    }
-
-    /* Sidebar Toggle Button (Hamburger) */
-    .sidebar-toggle {
-      left: auto !important;
-      right: 292px !important;
-      bottom: auto !important;
-      top: 18px !important;
-      width: 38px !important;
-      height: 38px !important;
-      padding: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: center !important;
-      align-items: center !important;
-      gap: 5px !important;
-      background: #16181d !important;
-      border: 1px solid var(--border-subtle) !important;
-      border-radius: 2px !important;
+      color: #9ca3af !important;
+      padding: 8px 12px !important;
+      border-radius: 4px !important;
+      text-decoration: none !important;
       cursor: pointer !important;
-      z-index: 110 !important;
-      transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease !important;
+      letter-spacing: -0.01em;
+      transition: color 0.15s ease, background 0.15s ease !important;
+      border-left: 2px solid transparent !important;
     }
 
-    .sidebar-toggle:hover {
-      background: #20242b !important;
-      border-color: #3b4252 !important;
+    .sidebar-nav > ul > li > a:hover {
+      color: #f3f4f6 !important;
+      background: #141416 !important;
     }
 
-    .sidebar-toggle span {
-      background-color: var(--accent-lime) !important;
-      height: 2px !important;
-      width: 18px !important;
+    .sidebar-nav > ul > li.active > a,
+    .sidebar-nav > ul > li > a.active {
+      color: #ffffff !important;
+      background: #18191d !important;
+      border-left: 2px solid #a3e635 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Secondary / Sub / Child Items (Sections & Headings) */
+    .sidebar-nav ul ul {
+      margin: 4px 0 8px 12px !important;
+      padding-left: 10px !important;
+      border-left: 1px solid #27272a !important;
+    }
+
+    .sidebar-nav ul ul li {
+      margin: 2px 0 !important;
+    }
+
+    .sidebar-nav ul ul a {
       display: block !important;
-      margin: 0 !important;
-      border-radius: 0 !important;
+      font-size: 0.82rem !important;
+      font-weight: 400 !important;
+      color: #71717a !important;
+      padding: 5px 8px !important;
+      border-radius: 3px !important;
+      text-decoration: none !important;
+      cursor: pointer !important;
+      transition: color 0.15s ease, background 0.15s ease, padding-left 0.15s ease !important;
     }
 
-    /* Desktop Toggle Closed State (Hidden off to the right) */
-    body.close .sidebar {
-      transform: translateX(100%) !important;
+    .sidebar-nav ul ul a:hover {
+      color: #e4e4e7 !important;
+      background: #141416 !important;
+      padding-left: 11px !important;
     }
 
-    body.close .sidebar-toggle {
-      right: 20px !important;
+    .sidebar-nav ul ul li.active > a,
+    .sidebar-nav ul ul a.active {
+      color: #a3e635 !important;
+      font-weight: 600 !important;
+      background: rgba(163, 230, 53, 0.08) !important;
+    }
+
+    /* Completely remove Docsify default toggle */
+    .sidebar-toggle {
+      display: none !important;
+    }
+
+    /* Clean Tab on the LEFT border of the right sidebar */
+    .sidebar-dock-tab {
+      position: absolute;
+      top: 16px;
+      left: -36px;
+      width: 36px;
+      height: 36px;
+      background: #0a0a0a;
+      border: 1px solid var(--border-subtle);
+      border-right: none;
+      border-radius: 2px 0 0 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 10002;
+      transition: background 0.15s ease;
+    }
+
+    .sidebar-dock-tab:hover {
+      background: #141414;
+    }
+
+    .sidebar-dock-tab span {
+      display: block;
+      width: 14px;
+      height: 2px;
+      background: #ededed;
+    }
+
+    /* When Sidebar is closed */
+    body.sidebar-closed .sidebar {
+      transform: translateX(280px) !important;
+    }
+
+    body.sidebar-open .sidebar {
+      transform: translateX(0) !important;
     }
 
     /* ==========================================================================
-       MAIN CONTENT CANVAS & STABLE CENTERED PAGE
+       HOME PAGE (NO SIDEBAR MODE)
+       ========================================================================== */
+    body.is-home .sidebar,
+    body.is-home .sidebar-dock-tab {
+      display: none !important;
+    }
+
+    body.is-home .content {
+      padding: 0 !important;
+    }
+
+    body.is-home .markdown-section {
+      max-width: 1040px !important;
+    }
+
+    /* ==========================================================================
+       CONTENT CANVAS & CENTERED PAGE
        ========================================================================== */
     .content {
       position: static !important;
@@ -179,202 +359,155 @@
       padding: 0 !important;
       margin: 0 !important;
       width: 100% !important;
-      min-height: 100vh !important;
-      transform: none !important;
-      transition: none !important;
+      min-height: calc(100vh - 60px) !important;
+      padding-top: 60px !important;
     }
 
-    body.close .content {
-      padding: 0 !important;
-      transform: none !important;
-    }
-
-    /* Centered Reading Column stays completely locked in place */
     .markdown-section {
-      max-width: 980px !important;
+      width: 100% !important;
+      max-width: 920px !important;
       margin: 0 auto !important;
-      padding: 48px 48px 120px !important;
+      padding: 48px 32px 100px !important;
       box-sizing: border-box !important;
-      transform: none !important;
-      transition: none !important;
+      line-height: 1.7 !important;
+      font-size: 0.96rem !important;
     }
 
     /* ==========================================================================
-       HERO BANNER & GRID CARDS
+       GLOBAL FOOTER (Modern Engine Architectural Style)
        ========================================================================== */
-    .hero-container {
-      text-align: center;
-      padding: 48px 20px 40px;
-      margin-bottom: 36px;
-      border-bottom: 1px solid var(--border-subtle);
+    .site-footer {
+      border-top: 1px solid var(--border-subtle);
+      background: #000000;
+      padding: 64px 32px 36px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-top: 80px;
+      width: 100%;
+      clear: both;
     }
 
-    .hero-badge {
-      display: inline-flex;
+    .site-footer-inner {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 36px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .footer-brand-header {
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 14px;
-      border-radius: 2px !important;
-      background: rgba(181, 232, 83, 0.12);
-      border: 1px solid rgba(181, 232, 83, 0.28);
-      color: var(--accent-lime);
+      gap: 10px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .footer-brand-header img {
+      width: 26px;
+      height: 26px;
+    }
+
+    .footer-desc {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      line-height: 1.6;
+      max-width: 320px;
+      margin: 0;
+    }
+
+    .footer-col h4 {
       font-size: 0.82rem;
       font-weight: 600;
-      letter-spacing: 0.3px;
-      margin-bottom: 24px;
-    }
-
-    .hero-container h1 {
-      font-size: 3.2rem !important;
-      font-weight: 800 !important;
-      letter-spacing: -1.2px !important;
-      line-height: 1.1 !important;
-      margin: 0 0 16px !important;
-      color: #ffffff !important;
-      border: none !important;
-    }
-
-    .hero-container p {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      max-width: 680px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
-    }
-
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: var(--accent-lime);
-      color: #0c0d0e;
-      font-weight: 700;
-      padding: 12px 26px;
-      border-radius: 2px !important;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: transform 0.15s ease, background 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary:hover {
-      background: #c8fa5f;
-      transform: translateY(-1px);
-      color: #0c0d0e;
-    }
-
-    .btn-secondary {
-      background: #16181d;
-      color: #f1f5f9;
-      border: 1px solid #282c34;
-      font-weight: 600;
-      padding: 12px 26px;
-      border-radius: 2px !important;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: all 0.15s ease;
-    }
-
-    .btn-secondary:hover {
-      background: #20242b;
-      border-color: #3b4252;
-      color: #ffffff;
-    }
-
-    .install-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 2px !important;
-      padding: 14px 24px;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--code-font);
-      font-size: 0.95rem;
-      margin: 28px auto 0;
-      color: #f1f5f9;
-    }
-
-    .install-prompt {
-      color: #64748b;
-      user-select: none;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 18px;
-      margin: 36px 0;
-      width: 100%;
-    }
-
-    .feature-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 2px !important;
-      padding: 24px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .feature-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
-    }
-
-    .feature-card-tag {
-      font-family: var(--code-font);
-      font-size: 0.72rem;
+      color: #ededed;
       text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--accent-lime);
-      margin-bottom: 10px;
+      letter-spacing: 0.6px;
+      margin: 0 0 16px 0;
     }
 
-    .feature-card h3 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      color: #ffffff;
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+    .footer-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .feature-card p {
+    .footer-col a {
       color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.6;
-      margin-bottom: 0;
+      text-decoration: none;
+      font-size: 0.86rem;
+      transition: color 0.15s ease;
+      display: inline-block;
+    }
+
+    .footer-col a:hover {
+      color: #ffffff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.82rem;
+      color: var(--text-subtle);
     }
 
     /* ==========================================================================
-       CODE BLOCKS & SYNTAX HIGHLIGHTING
+       CODE BLOCKS & SYNTAX HIGHLIGHTING (Clean Minimalist Engine Look)
        ========================================================================== */
     .markdown-section pre,
     .markdown-section pre[class*="language-"] {
-      background: var(--bg-code) !important;
+      background: #000000 !important;
       border: 1px solid var(--border-subtle) !important;
       border-radius: 2px !important;
       margin: 24px 0 !important;
-      padding: 22px 26px !important;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+      padding: 20px 24px !important;
       position: relative !important;
       overflow-x: auto !important;
+      outline: none !important;
+    }
+
+    /* Strictly no internal borders inside code blocks */
+    .markdown-section pre *,
+    .markdown-section pre code,
+    .markdown-section pre code * {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Suppress language label pill */
+    .markdown-section pre::before,
+    .markdown-section pre::after {
+      display: none !important;
+      content: none !important;
+      border: none !important;
     }
 
     .markdown-section code,
     .markdown-section code[class*="language-"] {
       font-family: var(--code-font) !important;
-      font-size: 0.92rem !important;
+      font-size: 0.88rem !important;
       line-height: 1.7 !important;
-      color: #e2e8f0 !important;
+      color: #ededed !important;
       background: transparent !important;
       border: none !important;
       padding: 0 !important;
@@ -384,80 +517,59 @@
     .markdown-section p code,
     .markdown-section li code,
     .markdown-section table code {
-      background: #181b21 !important;
-      color: var(--accent-lime) !important;
-      border: 1px solid #282d37 !important;
-      padding: 3px 8px !important;
+      background: #141414 !important;
+      color: #ededed !important;
+      border: 1px solid var(--border-subtle) !important;
+      padding: 2px 7px !important;
       border-radius: 2px !important;
       font-size: 0.86em !important;
       font-weight: 500 !important;
     }
 
-    /* Token Syntax Palette */
-    .token.comment, .token.prolog, .token.doctype, .token.cdata {
-      color: #636d7d !important;
-      font-style: italic !important;
-    }
-    .token.punctuation {
-      color: #8b949e !important;
-    }
-    .token.property, .token.tag, .token.boolean, .token.number, .token.constant {
-      color: var(--accent-orange) !important;
-      font-weight: 500 !important;
-    }
-    .token.string, .token.char, .token.builtin {
-      color: var(--accent-lime) !important;
-    }
-    .token.operator {
-      color: #67e8f9 !important;
-    }
-    .token.keyword {
-      color: #f472b6 !important;
-      font-weight: 600 !important;
-    }
-    .token.function {
-      color: #60a5fa !important;
-      font-weight: 600 !important;
-    }
-    .token.variable {
-      color: #fbbf24 !important;
-    }
+    /* Modern Engine Palette */
+    .token.comment, .token.prolog, .token.doctype, .token.cdata { color: #666666 !important; font-style: italic !important; }
+    .token.punctuation { color: #888888 !important; }
+    .token.property, .token.tag, .token.constant { color: #f472b6 !important; }
+    .token.boolean, .token.number { color: #fb923c !important; }
+    .token.string, .token.char, .token.builtin { color: #a3e635 !important; }
+    .token.operator { color: #38bdf8 !important; }
+    .token.keyword { color: #f472b6 !important; font-weight: 500 !important; }
+    .token.function { color: #60a5fa !important; font-weight: 500 !important; }
+    .token.variable { color: #fde047 !important; }
+    .token.class-name { color: #38bdf8 !important; }
 
     /* Copy Button */
     .docsify-copy-code-button {
-      background: #1c2027 !important;
+      background: #111111 !important;
       color: var(--text-muted) !important;
       border-radius: 2px !important;
       font-size: 11px !important;
-      font-weight: 600 !important;
-      padding: 6px 12px !important;
-      border: 1px solid #2d333f !important;
-      top: 14px !important;
-      right: 14px !important;
+      font-weight: 500 !important;
+      padding: 5px 10px !important;
+      border: 1px solid var(--border-subtle) !important;
+      top: 12px !important;
+      right: 12px !important;
       transition: all 0.15s ease !important;
     }
 
     .docsify-copy-code-button:hover {
+      background: #1c1c1c !important;
       color: #ffffff !important;
-      background: #282f3a !important;
-      border-color: #3f4757 !important;
+      border-color: #444444 !important;
     }
 
-    /* ==========================================================================
-       HIGH-CONTRAST SCROLLABLE TABLES
-       ========================================================================== */
+    /* Minimalist High-Contrast Tables */
     .markdown-section table {
       display: block !important;
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
       border-radius: 2px !important;
-      border: 1px solid #22262e !important;
+      border: 1px solid var(--border-subtle) !important;
       border-spacing: 0 !important;
       border-collapse: separate !important;
       margin: 32px 0 !important;
-      background: #111317 !important;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
+      background: #0a0a0a !important;
     }
 
     .markdown-section table th,
@@ -466,199 +578,406 @@
     }
 
     .markdown-section table th {
-      background: #171a21 !important;
+      background: #111111 !important;
       color: #ffffff !important;
-      font-weight: 700 !important;
-      font-size: 0.9rem !important;
-      letter-spacing: 0.3px !important;
+      font-weight: 600 !important;
+      font-size: 0.88rem !important;
       border: none !important;
-      border-bottom: 2px solid #282e38 !important;
-      padding: 16px 20px !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+      padding: 14px 20px !important;
       text-align: left !important;
     }
 
     .markdown-section table td {
-      background: #111317 !important;
-      color: #cbd5e1 !important;
+      background: #0a0a0a !important;
+      color: #d4d4d4 !important;
       border: none !important;
-      border-bottom: 1px solid #1c2026 !important;
-      padding: 15px 20px !important;
-      font-size: 0.92rem !important;
+      border-bottom: 1px solid #1a1a1a !important;
+      padding: 14px 20px !important;
+      font-size: 0.9rem !important;
       line-height: 1.6 !important;
     }
 
-    .markdown-section table tr:last-child td {
-      border-bottom: none !important;
-    }
+    .markdown-section table tr:last-child td { border-bottom: none !important; }
+    .markdown-section table tr:hover td { background: #141414 !important; color: #ffffff !important; }
+    .markdown-section table td strong { color: #ffffff !important; }
 
-    /* Alternating row styling & smooth hover highlight */
-    .markdown-section table tr:nth-child(even) td {
-      background: #14171d !important;
-    }
-
-    .markdown-section table tr:hover td {
-      background: #1b1f27 !important;
+    /* Typography Hierarchy & High-Contrast Clean Headings */
+    .markdown-section h1,
+    .markdown-section h2,
+    .markdown-section h3,
+    .markdown-section h4,
+    .markdown-section h5,
+    .markdown-section h6 {
       color: #ffffff !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.025em !important;
+      margin-left: 0 !important;
+      line-height: 1.25 !important;
+      position: relative !important;
     }
 
-    /* Bold first column text or Elaichi column text */
-    .markdown-section table td strong {
-      color: #B5E853 !important; /* Bun cardamom accent for emphasized table cells */
-    }
-
-    /* Typography Hierarchy */
     .markdown-section h1 {
-      font-size: 2.3rem !important;
+      font-size: 2.25rem !important;
       font-weight: 800 !important;
-      letter-spacing: -0.6px !important;
-      color: #ffffff !important;
-      margin: 0 0 20px !important;
-      border-bottom: none !important;
+      letter-spacing: -0.035em !important;
+      margin: 0 0 24px 0 !important;
+      padding-bottom: 16px !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
     }
 
     .markdown-section h2 {
-      font-size: 1.6rem !important;
+      font-size: 1.55rem !important;
       font-weight: 700 !important;
-      letter-spacing: -0.4px !important;
-      color: #ffffff !important;
-      margin-top: 48px !important;
+      letter-spacing: -0.025em !important;
+      margin: 48px 0 16px 0 !important;
+      padding-bottom: 10px !important;
       border-bottom: 1px solid var(--border-subtle) !important;
-      padding-bottom: 12px !important;
     }
 
     .markdown-section h3 {
-      font-size: 1.22rem !important;
+      font-size: 1.2rem !important;
       font-weight: 600 !important;
-      color: #f1f5f9 !important;
-      margin-top: 28px !important;
+      letter-spacing: -0.015em !important;
+      color: #f3f4f6 !important;
+      margin: 32px 0 12px 0 !important;
+      border-bottom: none !important;
+    }
+
+    .markdown-section h4 {
+      font-size: 1.02rem !important;
+      font-weight: 600 !important;
+      color: #e5e7eb !important;
+      margin: 24px 0 8px 0 !important;
+    }
+
+    /* Clean link anchors next to headings without awkward colors or underlines */
+    .markdown-section h1 a,
+    .markdown-section h2 a,
+    .markdown-section h3 a,
+    .markdown-section h4 a {
+      color: inherit !important;
+      text-decoration: none !important;
+      border: none !important;
+    }
+
+    .markdown-section h1 a:hover,
+    .markdown-section h2 a:hover,
+    .markdown-section h3 a:hover,
+    .markdown-section h4 a:hover {
+      text-decoration: none !important;
+      color: #ffffff !important;
     }
 
     .markdown-section hr {
       border: none !important;
       border-top: 1px solid var(--border-subtle) !important;
-      margin: 40px 0 !important;
+      margin: 44px 0 !important;
     }
 
-    /* Responsive Breakpoints & Fluid Typography */
-    @media (max-width: 1024px) {
-      .markdown-section {
-        padding: 40px 24px 100px !important;
-      }
-      .feature-grid {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
-      }
-    }
-
+    /* ==========================================================================
+       MOBILE RESPONSIVENESS
+       ========================================================================== */
     @media (max-width: 768px) {
-      /* Mobile Sidebar Drawer: Hidden offscreen by default */
+      .site-nav {
+        display: none !important;
+      }
+      .mobile-menu-btn {
+        display: flex !important;
+      }
+      .sidebar-toggle {
+        display: none !important;
+      }
+      .sidebar-dock-tab {
+        display: none !important;
+      }
       .sidebar {
+        top: 60px !important;
+        height: calc(100vh - 60px) !important;
+        right: 0 !important;
+        width: 280px !important;
+        max-width: 85vw !important;
+        z-index: 99999 !important;
         transform: translateX(100%) !important;
-        width: 270px !important;
-        max-width: 80vw !important;
-        box-shadow: -8px 0 35px rgba(0, 0, 0, 0.6) !important;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.7) !important;
       }
-
-      /* When open (default on Docsify or toggled) */
-      body:not(.close) .sidebar {
-        transform: translateX(100%) !important;
-      }
-
-      /* In Docsify mobile, body.close opens the drawer */
-      body.close .sidebar {
+      body.mobile-sidebar-open .sidebar {
         transform: translateX(0) !important;
       }
-
-      /* Mobile Toggle Button */
-      .sidebar-toggle {
-        top: 14px !important;
-        right: 16px !important;
-        left: auto !important;
-        width: 38px !important;
-        height: 38px !important;
-        border-radius: 2px !important;
+      .mobile-backdrop {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
       }
-
-      /* When sidebar drawer is visible, shift hamburger into viewport alignment */
-      body.close .sidebar-toggle {
-        right: calc(min(270px, 80vw) + 12px) !important;
+      body.mobile-sidebar-open .mobile-backdrop {
+        opacity: 1;
+        pointer-events: auto;
       }
-
-      /* Content Padding */
       .markdown-section {
-        padding: 24px 16px 80px !important;
+        padding: 24px 18px 80px !important;
       }
-
-      /* Hero Section on Mobile */
-      .hero-container {
-        padding: 36px 12px 28px !important;
-        margin-bottom: 24px !important;
-      }
-      .hero-container h1 {
-        font-size: 2.2rem !important;
-        letter-spacing: -0.8px !important;
-      }
-      .hero-container p {
-        font-size: 1.05rem !important;
-        margin-bottom: 24px !important;
-      }
-
-      /* Actions & Code Box */
-      .hero-actions {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-      }
-      .btn-primary, .btn-secondary {
-        justify-content: center !important;
-        width: 100% !important;
-        padding: 12px 18px !important;
-        border-radius: 2px !important;
-      }
-      .install-box {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 12px 16px !important;
-        font-size: 0.85rem !important;
-        overflow-x: auto !important;
-        border-radius: 2px !important;
-      }
-
-      /* Feature Grid */
-      .feature-grid {
+      .footer-grid {
         grid-template-columns: 1fr !important;
-        gap: 14px !important;
-        margin: 24px 0 !important;
+        gap: 32px !important;
       }
-      .feature-card {
-        padding: 20px !important;
-        border-radius: 2px !important;
+      .footer-brand {
+        text-align: left;
       }
-
-      /* Pre blocks */
-      .markdown-section pre,
-      .markdown-section pre[class*="language-"] {
-        padding: 16px 16px !important;
-        border-radius: 2px !important;
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
       }
     }
   </style>
 </head>
 <body>
+
+  <!-- Global Fixed Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <a href="#/" class="site-brand" aria-label="Elaichi Home">
+        <img src="elaichi-logo.svg" alt="Elaichi">
+        <span>Elaichi</span>
+      </a>
+    </div>
+
+    <nav class="site-nav">
+      <a href="#/getting-started">Docs</a>
+      <a href="#/language-reference">Reference</a>
+      <a href="#/architecture">Architecture</a>
+      <a href="#/compiler-internals">Internals</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Docsify Main App -->
   <div id="app"></div>
 
+  <!-- Footer Template (Injected into content by Docsify plugin) -->
+  <template id="footerTemplate">
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="#/" class="footer-brand-header">
+              <img src="elaichi-logo.svg" alt="Elaichi Mascot">
+              <span>Elaichi</span>
+            </a>
+            <p class="footer-desc">
+              A general-purpose programming language combining unboxed native static performance with a tagged bytecode runtime.
+            </p>
+          </div>
+
+          <div class="footer-col">
+            <h4>Documentation</h4>
+            <ul>
+              <li><a href="#/getting-started">Installation</a></li>
+              <li><a href="#/getting-started">Quickstart Guide</a></li>
+              <li><a href="#/language-reference">Language Reference</a></li>
+              <li><a href="#/language-reference">Standard Primitives</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>Architecture</h4>
+            <ul>
+              <li><a href="#/architecture">Dual-Stack Model</a></li>
+              <li><a href="#/architecture">Static Compilation</a></li>
+              <li><a href="#/compiler-internals">Bytecode VM</a></li>
+              <li><a href="#/compiler-internals">Bridge Internals</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>Community</h4>
+            <ul>
+              <li>
+                <a href="https://github.com/Nikhil012N/elaichi" target="_blank" rel="noreferrer" class="github-btn" style="margin-top: 4px;">
+                  <svg viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                  </svg>
+                  <span>GitHub</span>
+                </a>
+              </li>
+              <li><a href="https://github.com/Nikhil012N/elaichi/issues" target="_blank" rel="noreferrer">Issues & Roadmap</a></li>
+              <li><a href="https://github.com/Nikhil012N/elaichi/releases" target="_blank" rel="noreferrer">Releases</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div>© 2026 Elaichi Programming Language. Distributed under the MIT License.</div>
+        </div>
+      </div>
+    </footer>
+  </template>
+
   <script>
+    // Route detector for Home Page (no sidebar on home)
+    function updateRouteState() {
+      const hash = window.location.hash.toLowerCase();
+      const isHome = hash === '' || hash === '#/' || hash === '#/readme';
+      if (isHome) {
+        document.body.classList.add('is-home');
+        document.body.classList.remove('sidebar-open');
+      } else {
+        document.body.classList.remove('is-home');
+      }
+    }
+
+    window.addEventListener('hashchange', updateRouteState);
+    window.addEventListener('DOMContentLoaded', updateRouteState);
+
+    // Sidebar Left-Docked Hamburger Toggle Trigger
+    function ensureDockTab() {
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar && !document.getElementById('sidebarDockTab')) {
+        const tab = document.createElement('button');
+        tab.id = 'sidebarDockTab';
+        tab.className = 'sidebar-dock-tab';
+        tab.setAttribute('aria-label', 'Toggle Sidebar');
+        tab.innerHTML = '<span></span><span></span><span></span>';
+        tab.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (document.body.classList.contains('sidebar-closed')) {
+            document.body.classList.remove('sidebar-closed');
+            document.body.classList.add('sidebar-open');
+          } else {
+            document.body.classList.toggle('sidebar-closed');
+            document.body.classList.toggle('sidebar-open');
+          }
+        });
+        sidebar.appendChild(tab);
+      }
+    }
+
+    // Header Mobile Menu Button & Backdrop Handling
+    function setupMobileMenu() {
+      const mobileBtn = document.getElementById('mobileMenuBtn');
+      let backdrop = document.querySelector('.mobile-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'mobile-backdrop';
+        document.body.appendChild(backdrop);
+        backdrop.addEventListener('click', function() {
+          document.body.classList.remove('mobile-sidebar-open');
+        });
+      }
+
+      if (mobileBtn) {
+        mobileBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          document.body.classList.toggle('mobile-sidebar-open');
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      ensureDockTab();
+      setupMobileMenu();
+    });
+
+    // Close sidebar drawer when clicking on any navigation link on mobile
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.sidebar-nav a') && window.innerWidth <= 768) {
+        document.body.classList.remove('mobile-sidebar-open');
+      } else if (!e.target.closest('.sidebar') && !e.target.closest('#mobileMenuBtn') && window.innerWidth <= 768) {
+        document.body.classList.remove('mobile-sidebar-open');
+      }
+    });
+
     window.$docsify = {
-      name: '<img src="elaichi-logo.svg" alt="elaichi">',
-      repo: 'https://github.com/Nikhil012N/elaichi',
+      repo: '',
       loadSidebar: true,
       subMaxLevel: 3,
       auto2top: true,
       homepage: 'README.md',
+      routerMode: 'hash',
       copyCode: {
         buttonText: 'Copy',
         errorText: 'Error',
         successText: 'Copied'
-      }
+      },
+      plugins: [
+        function(hook, vm) {
+          const footerHTML = document.getElementById('footerTemplate').innerHTML;
+          hook.afterEach(function(html) {
+            return html + footerHTML;
+          });
+
+          // ScrollSpy & Sidebar Synchronization with reading movement
+          hook.doneEach(function() {
+            // Auto scroll sidebar container to keep the active menu item in view
+            setTimeout(function() {
+              const activeItem = document.querySelector('.sidebar-nav li.active, .sidebar-nav a.active');
+              if (activeItem) {
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }, 100);
+
+            // Dynamic Intersection Observer for in-page heading tracking
+            const headings = Array.from(document.querySelectorAll('.markdown-section h1[id], .markdown-section h2[id], .markdown-section h3[id]'));
+            const sidebarLinks = Array.from(document.querySelectorAll('.sidebar-nav a'));
+
+            if (!headings.length || !sidebarLinks.length) return;
+
+            let observer;
+            if (window._headingObserver) {
+              window._headingObserver.disconnect();
+            }
+
+            window._headingObserver = new IntersectionObserver(function(entries) {
+              // Find headings currently in upper portion of viewport
+              const visible = entries.filter(e => e.isIntersecting);
+              if (visible.length > 0) {
+                // Pick the top visible heading
+                visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+                const currentId = visible[0].target.getAttribute('id');
+                if (currentId) {
+                  sidebarLinks.forEach(function(link) {
+                    const href = link.getAttribute('href') || '';
+                    if (href.endsWith('?id=' + currentId) || href.endsWith('#' + currentId)) {
+                      // Remove active from peers in the sub-list
+                      const subList = link.closest('ul');
+                      if (subList) {
+                        subList.querySelectorAll('li, a').forEach(el => el.classList.remove('active'));
+                      }
+                      link.classList.add('active');
+                      const li = link.closest('li');
+                      if (li) li.classList.add('active');
+                    }
+                  });
+                }
+              }
+            }, {
+              rootMargin: '0px 0px -70% 0px',
+              threshold: [0, 0.25, 0.5]
+            });
+
+            headings.forEach(function(h) {
+              window._headingObserver.observe(h);
+            });
+          });
+        }
+      ]
     };
   </script>
 

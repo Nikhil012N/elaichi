@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./elaichi-logo.svg" alt="elaichi" width="360" />
+  <img src="./elaichi-logo.svg" alt="elaichi" width="160" />
 </p>
 
 # Elaichi

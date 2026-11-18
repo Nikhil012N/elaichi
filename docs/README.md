@@ -1,161 +1,122 @@
-# Elaichi Language & Runtime Specification
+<div style="text-align: center; padding: 48px 0 36px; border-bottom: 1px solid #1e2227;">
+  <img src="elaichi-logo.svg" alt="Elaichi" width="100" height="100" style="margin-bottom: 20px; display: inline-block;">
+  <h1 style="font-size: 3rem; font-weight: 800; letter-spacing: -1.2px; margin: 0 0 12px; border: none; color: #ffffff;">Elaichi</h1>
+  <p style="font-size: 1.25rem; color: #94a3b8; max-width: 640px; margin: 0 auto 28px; line-height: 1.6;">
+    A fast, modern JavaScript-syntax runtime designed for everyone.<br>Develop dynamically, execute compute-heavy loops at raw machine speed.
+  </p>
+  <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 28px;">
+    <a href="#/getting-started" style="background: #B5E853; color: #0c0d0e; font-weight: 700; padding: 11px 24px; border-radius: 2px; text-decoration: none; font-size: 0.95rem;">Quickstart Guide →</a>
+    <a href="#/language-reference" style="background: #16181d; color: #f1f5f9; border: 1px solid #282c34; font-weight: 600; padding: 11px 24px; border-radius: 2px; text-decoration: none; font-size: 0.95rem;">API Reference</a>
+    <a href="https://github.com/Nikhil012N/elaichi" target="_blank" style="background: #16181d; color: #94a3b8; border: 1px solid #282c34; font-weight: 600; padding: 11px 20px; border-radius: 2px; text-decoration: none; font-size: 0.95rem;">GitHub</a>
+  </div>
+  <div style="background: #121417; border: 1px solid #22262e; border-radius: 2px; padding: 12px 24px; display: inline-flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.92rem; color: #f1f5f9;">
+    <span style="color: #64748b; user-select: none;">$</span>
+    <span>elaichi run app.el</span>
+  </div>
+</div>
 
-Elaichi is a general-purpose programming language built around an Abstract Syntax Tree (AST) Bifurcation model. It evaluates programs across two cooperative execution stacks: an unboxed native static stack and a tagged bytecode dynamic virtual machine.
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 36px 0;">
+  <div style="background: #121417; border: 1px solid #1e2227; border-radius: 2px; padding: 22px;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #B5E853; font-weight: 700; margin-bottom: 8px;">DUAL-STACK RUNTIME</div>
+    <h3 style="margin: 0 0 8px; color: #ffffff; font-size: 1.1rem; font-weight: 700;">Static Speed When You Need It</h3>
+    <p style="margin: 0; color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">Add <code>static</code> to any function for zero-overhead, unboxed CPU register computation without garbage collection lag.</p>
+  </div>
+  <div style="background: #121417; border: 1px solid #1e2227; border-radius: 2px; padding: 22px;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #B5E853; font-weight: 700; margin-bottom: 8px;">FAMILIAR SYNTAX</div>
+    <h3 style="margin: 0 0 8px; color: #ffffff; font-size: 1.1rem; font-weight: 700;">Standard JavaScript Feel</h3>
+    <p style="margin: 0; color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">Build easily with <code>const</code>, <code>let</code>, dictionary objects, dynamic lists, range loops, and straightforward control flow.</p>
+  </div>
+  <div style="background: #121417; border: 1px solid #1e2227; border-radius: 2px; padding: 22px;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #B5E853; font-weight: 700; margin-bottom: 8px;">ZERO DEPENDENCIES</div>
+    <h3 style="margin: 0 0 8px; color: #ffffff; font-size: 1.1rem; font-weight: 700;">Self-Contained Executable</h3>
+    <p style="margin: 0; color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">Compiles directly to a single binary with zero external runtime requirements. Download and run anywhere.</p>
+  </div>
+</div>
 
 ---
 
-## Technical Overview
+## What is Elaichi?
 
-Programs written in Elaichi are parsed into a single unified syntax tree and partitioned during compilation:
+Elaichi is a general-purpose programming language built in Rust that unites **developer productivity** and **execution performance**.
 
-1. **Static Execution Stack**: Subroutines declared with `static function` compile to linear arrays of unboxed opcodes (`StaticInst`). Variables reside in pre-allocated register slots without heap allocations, boxing headers, or garbage collection overhead.
-2. **Dynamic Execution Stack**: Routines declared with standard `function` syntax compile to virtual machine bytecode (`OpCode`). Dynamic values are stored as tagged unions (`DynValue`) supporting runtime mutation, heterogenous lists, and dictionaries.
-3. **Inter-Stack Boundary**: Calls between dynamic and static scopes pass through zero-copy type-checking thunks implemented in `src/bridge.rs`.
+Most environments force a trade-off:
+* **Dynamic languages** (like standard JavaScript and Python) are intuitive to write, but every value is wrapped in extra memory ("boxed"), causing math and loop bottlenecks.
+* **Systems languages** (like Rust, C, or C++) are fast, but require manual memory handling, complex setups, and steep learning curves.
+
+**Elaichi solves this with AST Bifurcation:**
+1. **Dynamic Track**: Write standard, expressive application logic using everyday variables and objects.
+2. **Static Track**: Mark compute-intensive algorithms with `static function` to execute at raw CPU hardware speeds.
+3. **The Inter-Stack Bridge**: Dynamic and static routines communicate seamlessly. You can call static functions directly from regular code without writing foreign function bindings.
 
 ---
 
-## Core Language Syntax
+## Quick Example
 
-### Lexical Scoping and Variables
-
-Elaichi prohibits implicit declarations and legacy variable hoisting. All identifiers must be bound using `const` or `let`:
+Here is a complete program demonstrating how dynamic code interacts with a high-performance static routine:
 
 ```javascript
-// Immutable dynamic binding
-const maxRetries = 5;
-
-// Mutable dynamic binding
-let counter = 0;
-counter = counter + 1;
-
-// Statically typed bindings (unboxed in static scopes)
-const step: i64 = 1;
-let accumulator: f64 = 0.0;
-```
-
-### Static Functions
-
-Functions marked with `static function` require explicit parameter and return types:
-
-```javascript
-static function dotProduct(x1: f64, y1: f64, x2: f64, y2: f64): f64 {
-    const dx: f64 = x1 * x2;
-    const dy: f64 = y1 * y2;
-    return dx + dy;
-}
-```
-
-### Dynamic Functions
-
-Standard functions execute on the register VM:
-
-```javascript
-function calculateMetrics(records) {
-    let total = 0;
-    for (let i in 0..len(records)) {
-        total = total + records[i];
+// 1. High-Performance Static Routine (Runs at raw CPU speed)
+static function calculateFibonacci(n: i64): i64 {
+    if (n <= 1) {
+        return n;
     }
-    return total;
-}
-```
-
-### Control Flow
-
-Parentheses are mandatory for loop and branch conditions:
-
-```javascript
-// Conditional branching
-if (value > 100) {
-    terminal.println("Threshold exceeded");
-} else if (value == 100) {
-    terminal.println("Threshold met");
-} else {
-    terminal.println("Within limits");
+    return calculateFibonacci(n - 1) + calculateFibonacci(n - 2);
 }
 
-// While loop with continue
-let n = 10;
-while (n > 0) {
-    if (n == 5) {
-        n = n - 1;
-        continue;
-    }
-    n = n - 1;
-}
+// 2. Dynamic Application Logic (Familiar and flexible)
+function main() {
+    terminal.println("=== Elaichi Execution Engine ===");
 
-// Range iteration with break
-for (let i in 0..100) {
-    if (i == 50) {
-        break;
-    }
+    // Call static computation seamlessly
+    const terms = 20;
+    terminal.print("Calculating fibonacci(" + terms + ")... ");
+    const result = calculateFibonacci(terms);
+    terminal.println(result);
+
+    // Dynamic dictionary mutation
+    let report = {
+        task: "Fibonacci Calculation",
+        input: terms,
+        output: result,
+        status: "complete"
+    };
+
+    terminal.println("Status: " + report.status);
+    return 0;
 }
 ```
 
 ---
 
-## Memory & Type System
+## Architectural Comparison
 
-### Scalar Types
-
-| Type | Size | Allocation Target | Description |
+| Feature | Elaichi | Standard Dynamic Engines | Systems Languages |
 | :--- | :--- | :--- | :--- |
-| `i64` | 8 bytes | Static Stack | 64-bit two's complement signed integer |
-| `f64` | 8 bytes | Static Stack | 64-bit IEEE 754 double-precision floating point |
-| `bool` | 1 byte | Static Stack | Boolean logic flag (`true`, `false`) |
-| `string` | Variable | Dynamic Heap | UTF-8 encoded string |
-| `dyn` | Variable | Dynamic Stack | Tagged variant representing arbitrary runtime values |
-
-### Dictionaries and In-Place Mutation
-
-Dictionaries support dot-notation and key indexing:
-
-```javascript
-let config = {
-    host: "127.0.0.1",
-    port: 8080,
-    active: true
-};
-
-// Field assignment
-config.port = 9000;
-terminal.println(config.port); // 9000
-```
-
-### Explicit Type Casting
-
-Type casting is performed via the `as` operator:
-
-```javascript
-const raw = 42;
-const asFloat = raw as f64;
-const asText = raw as string;
-```
+| **Learning Curve** | **Beginner-Friendly (JS-Style)** | Beginner-Friendly | Steep / Strict |
+| **Static Execution** | **Unboxed Hardware Registers** | Deoptimized / JIT Bailouts | Compiled Machine Code |
+| **Dynamic Execution** | **Bytecode Virtual Machine** | Bytecode VM / Interpreter | Not Supported (Static Only) |
+| **Value Boxing** | **Zero boxing in `static` scopes** | Full Object Boxing | Zero Boxing |
+| **I/O Engine** | **First-class `terminal.*` opcodes** | Standard Library (`console.log`) | System Calls / Streams |
+| **Distribution** | **Single standalone binary** | Large runtime directory | Single standalone binary |
 
 ---
 
-## The Terminal Subsystem
+## Standard Library Primitives
 
-Elaichi provides first-class I/O opcodes via the `terminal` namespace. Writes are flushed directly through the runtime standard streams:
+Elaichi includes essential utility functions out-of-the-box:
 
-```javascript
-terminal.print("Processing batch... ");
-terminal.println("Done.");
-
-terminal.warn("Memory capacity near ceiling");
-terminal.error("Unable to bind network interface");
-terminal.clear();
-```
+* **Collections**: `len(item)` returns list or dictionary size; `push(list, value)` appends an item.
+* **Dictionary Reflection**: `keys(dict)` returns sorted key names; `values(dict)` returns property values.
+* **Membership**: `contains(collection, target)` checks for items in lists, keys in dictionaries, or substrings in text.
+* **Math Primitives**: `abs(number)` returns the absolute value; `min(a, b)` and `max(a, b)` evaluate boundaries.
+* **Terminal I/O**: `terminal.print()`, `terminal.println()`, `terminal.warn()`, `terminal.error()`, and `terminal.clear()`.
 
 ---
 
-## Standard Utility Library
+## Documentation Index
 
-* `len(collection)`: Returns the integer length of an array, string, or dictionary.
-* `push(list, element)`: Appends an element to an array and returns the modified array.
-* `str(value)`: Returns the string representation of any primitive or composite value.
-* `keys(map)`: Returns an array of dictionary keys sorted alphabetically.
-* `values(map)`: Returns an array of values ordered by sorted dictionary keys.
-* `contains(collection, target)`: Verifies inclusion within an array, dictionary, or string.
-* `abs(number)`: Computes the absolute value of a signed integer or floating-point value.
-* `min(a, b)`: Returns the minimum of two numerical values.
-* `max(a, b)`: Returns the maximum of two numerical values.
+Explore the rest of the documentation:
+* [Getting Started Guide](getting-started.md) — Toolchain installation, compilation, and project creation.
+* [Language Reference](language-reference.md) — Complete specifications for syntax, types, loops, and operators.
+* [How It Works Under the Hood](architecture.md) — Explanation of AST bifurcation and the inter-stack bridge.
+* [Compiler Internals](compiler-internals.md) — Rust source code structure, parser grammar, and bytecode opcodes.

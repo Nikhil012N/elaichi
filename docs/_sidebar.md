@@ -1,5 +1,5 @@
-* [Overview](README.md)
+* [Welcome](README.md)
 * [Getting Started](getting-started.md)
-* [Architecture & Dual-Stack](architecture.md)
+* [How It Works](architecture.md)
 * [Language Reference](language-reference.md)
 * [Compiler Internals](compiler-internals.md)

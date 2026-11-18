@@ -1,110 +1,116 @@
 # Language Reference
 
-This document provides the formal grammar, keyword definitions, and semantics for the Elaichi programming language.
+This reference is a complete guide to writing Elaichi code, from basic syntax to built-in helper tools.
 
 ---
 
-## 1. Identifiers & Scoping
+## 1. Variables (`const` & `let`)
 
-Variable identifiers must begin with an alphabetic character or underscore, followed by alphanumeric characters or underscores. 
+In Elaichi, every variable must be declared with either `const` or `let`:
 
-All bindings must be explicitly introduced using `const` or `let`:
-
-```javascript
-// Constant: reassignment produces a compiler error
-const bufferSize = 1024;
-
-// Mutable binding
-let offset = 0;
-offset = offset + 16;
-```
+* **`const`**: Use when the value should never change. Reassigning it causes an error.
+  ```javascript
+  const siteUrl = "https://example.com";
+  ```
+* **`let`**: Use when you need to change or update the value later.
+  ```javascript
+  let counter = 0;
+  counter = counter + 1;
+  ```
 
 ---
 
 ## 2. Primitive Types
 
-Elaichi defines the following primitive types for statically typed declarations:
+When writing high-performance `static` functions, Elaichi asks you to specify the type of your data:
 
-* `i64`: 64-bit signed integer.
-* `f64`: 64-bit double-precision IEEE 754 floating point.
-* `bool`: Boolean value (`true` or `false`).
-* `string`: Dynamic UTF-8 string sequence.
+| Type | What it represents | Example |
+| :--- | :--- | :--- |
+| `i64` | Whole numbers (integers, positive or negative) | `42`, `-10`, `0` |
+| `f64` | Decimal numbers (floating point) | `3.14`, `-0.5`, `100.0` |
+| `bool` | True or False flags | `true`, `false` |
+| `string` | Text characters inside quotes | `"Hello World"` |
 
-Type annotations follow the variable identifier separated by a colon:
-
+**Example of declaring typed variables:**
 ```javascript
-const maxLimit: i64 = 500;
-let ratio: f64 = 0.75;
-let active: bool = true;
+const maxSpeed: i64 = 120;
+let temperature: f64 = 98.6;
+let isReady: bool = true;
 ```
 
 ---
 
 ## 3. Functions
 
-### Static Functions
-
-Functions prefixed with `static function` enforce static compilation. Type signatures are mandatory:
+### Dynamic Functions (General Purpose)
+Standard functions don't require you to declare data types:
 
 ```javascript
-static function vectorDot(x1: f64, y1: f64, x2: f64, y2: f64): f64 {
-    const dx: f64 = x1 * x2;
-    const dy: f64 = y1 * y2;
-    return dx + dy;
+function greetUser(name) {
+    terminal.println("Hello, " + name + "!");
 }
 ```
 
-### Dynamic Functions
-
-Dynamic functions do not require explicit type annotations and run on the bytecode virtual machine:
+### Static Functions (Maximum Speed)
+Add `static` in front of the function and provide types for all inputs and the output. The computer runs this code at raw hardware speed:
 
 ```javascript
-function formatOutput(header, payload) {
-    terminal.println(header);
-    terminal.println(payload);
+static function multiply(x: i64, y: i64): i64 {
+    return x * y;
 }
 ```
 
 ---
 
-## 4. Control Flow Statements
+## 4. Control Flow
 
-### Conditionals
-
-Parentheses around conditions and braces around blocks are mandatory:
+### `if` / `else if` / `else`
+Parentheses `(...)` around conditions and curly braces `{...}` around blocks are always required:
 
 ```javascript
-if (count == 0) {
-    terminal.println("Zero elements");
-} else if (count > 0) {
-    terminal.println("Positive elements");
+let balance = 150;
+
+if (balance > 100) {
+    terminal.println("Sufficient funds");
+} else if (balance > 0) {
+    terminal.println("Low funds");
 } else {
-    terminal.println("Negative elements");
+    terminal.println("Account empty");
 }
 ```
 
-### While Loops
+### `while` Loops
+Repeats code as long as a condition remains true:
 
 ```javascript
-let i = 0;
-while (i < 10) {
+let n = 5;
+while (n > 0) {
+    terminal.println("Remaining: " + n);
+    n = n - 1;
+}
+```
+
+### `for` Range Loops
+Iterate over a sequence of numbers using `start..end`:
+
+```javascript
+// Prints 0, 1, 2, 3, 4
+for (let i in 0..5) {
+    terminal.println("Item " + i);
+}
+```
+
+### Controlling Loops (`break` & `continue`)
+* **`break;`**: Stops the loop immediately.
+* **`continue;`**: Skips the rest of the current loop turn and moves to the next one.
+
+```javascript
+for (let i in 1..10) {
     if (i == 4) {
-        i = i + 1;
-        continue;
+        continue; // skip number 4
     }
-    terminal.println(i);
-    i = i + 1;
-}
-```
-
-### For-In Range Loops
-
-Iterates over a half-open numerical range `start..end`:
-
-```javascript
-for (let i in 0..10) {
-    if (i == 7) {
-        break;
+    if (i == 8) {
+        break;    // stop completely when reaching 8
     }
     terminal.println(i);
 }
@@ -112,53 +118,76 @@ for (let i in 0..10) {
 
 ---
 
-## 5. Composite Data Structures
+## 5. Collections (Lists & Dictionaries)
 
-### Arrays
-
-Arrays are dynamically sized and indexed via bracket syntax:
+### Lists (Arrays)
+Store ordered collections of data:
 
 ```javascript
-let numbers = [10, 20, 30, 40];
-numbers[1] = 25;
-terminal.println(numbers[1]); // 25
+let colors = ["red", "green", "blue"];
+
+// Read an element (starts at index 0)
+terminal.println(colors[0]); // red
+
+// Update an element
+colors[1] = "yellow";
+terminal.println(colors[1]); // yellow
 ```
 
-### Dictionaries
-
-Key-value structures with dot-notation field access and in-place field updates:
+### Dictionaries (Objects)
+Store data as key-value pairs. You can read and change fields using dot notation:
 
 ```javascript
-let node = {
-    address: "10.0.0.1",
-    port: 443,
-    secure: true
+let server = {
+    host: "localhost",
+    port: 8080,
+    online: true
 };
 
-node.port = 8443;
-terminal.println(node.port); // 8443
+// Accessing fields
+terminal.println("Server running on port: " + server.port);
+
+// Modifying fields in place
+server.port = 9000;
+terminal.println("Port changed to: " + server.port);
 ```
 
 ---
 
-## 6. Type Casting (`as`)
+## 6. Type Conversion (`as`)
 
-Converts expressions to a specified primitive type:
+Convert a value from one type to another explicitly using the `as` keyword:
 
 ```javascript
-const value = 50;
-const asFloat = value as f64;
-const asText = value as string;
+let count = 42;
+let asDecimal = count as f64;      // converts to 42.0
+let asText = count as string;       // converts to "42"
 ```
 
 ---
 
-## 7. Terminal I/O Subsystem
+## 7. The Terminal System
 
-The `terminal` namespace provides native bytecode stream operations:
+Instead of `console.log`, Elaichi provides native `terminal` commands:
 
-* `terminal.print(expr)`: Emits output without a trailing newline.
-* `terminal.println(expr)`: Emits output followed by a newline.
-* `terminal.warn(expr)`: Emits output prefixed with warning logging tags.
-* `terminal.error(expr)`: Emits output to the standard error stream.
-* `terminal.clear()`: Sends an ANSI clear-screen command to the terminal.
+* `terminal.print("text")`: Prints text on the current line (no newline at the end).
+* `terminal.println("text")`: Prints text and moves to the next line.
+* `terminal.warn("alert")`: Prints an alert with a warning tag.
+* `terminal.error("message")`: Prints an error message.
+* `terminal.clear()`: Clears the terminal screen.
+
+---
+
+## 8. Built-in Helper Functions
+
+* **`len(target)`**: Returns how many items are in a list, text, or dictionary.
+  ```javascript
+  len(["a", "b", "c"]); // returns 3
+  ```
+* **`push(list, item)`**: Adds an item to the end of a list.
+* **`keys(dictionary)`**: Returns a list of all key names in a dictionary.
+* **`values(dictionary)`**: Returns a list of all values in a dictionary.
+* **`contains(collection, item)`**: Checks if a list contains an item or if text contains a sub-word. Returns `true` or `false`.
+* **`abs(number)`**: Turns negative numbers into positive numbers (e.g. `abs(-5)` becomes `5`).
+* **`min(a, b)`**: Returns the smaller of two numbers.
+* **`max(a, b)`**: Returns the larger of two numbers.
