@@ -166,7 +166,28 @@ let asText = count as string;       // converts to "42"
 
 ---
 
-## 7. The Terminal System
+## 7. Multi-File Modules & Imports
+
+Elaichi supports multi-file programs using the `import` statement:
+
+```javascript
+import "./math_module.el";
+
+function main() {
+    let result = computeHypot(3.0, 4.0);
+    terminal.println("Result: " + result);
+    return 0;
+}
+```
+
+Import rules:
+* File paths can be relative (`./module.el` or `../utils/math.el`).
+* The `.el` extension is optional (`import "./math_module"`).
+* Cyclic imports are automatically detected and prevented by the module loader.
+
+---
+
+## 8. The Terminal System
 
 Instead of `console.log`, Elaichi provides native `terminal` commands:
 
@@ -178,7 +199,7 @@ Instead of `console.log`, Elaichi provides native `terminal` commands:
 
 ---
 
-## 8. Built-in Helper Functions
+## 9. Built-in Helper Functions
 
 Elaichi standardizes all identifiers using **camelCase** for variables and functions, and **PascalCase** for Types and Structs:
 

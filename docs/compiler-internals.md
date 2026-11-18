@@ -1,84 +1,73 @@
 # Compiler Internals
 
-Technical reference for the compiler passes, bytecode representations, and the dual-stack execution engine of Elaichi.
+Technical reference for the compiler passes, type inference, SSA intermediate representation (MIR), and the dual-stack execution engine of Elaichi.
 
 ---
 
-## Source Organization
+## 1. Modular Source Organization
 
 ```
 src/
-├── ast.rs            # AST node definitions, statements, and type system
-├── bifurcator.rs     # Partitioning pass: classifies AST into static vs dynamic IR
-├── bridge.rs         # Type coercion, unboxing, and boxing implementations
-├── lexer.rs          # Lexical scanner for tokens and operators
-├── main.rs           # CLI driver and file loader
-├── parser.rs         # Recursive-descent grammar parser
-├── runtime.rs        # Cooperative dual-stack execution coordinator
-├── static_engine.rs  # Unboxed static instruction set & frame executor
-├── tests.rs          # Test suite
-└── vm.rs             # Dynamic bytecode chunk, OpCodes, and tagged values
+├── frontend/             # Lexer, Parser, AST & Multi-File Module Loader
+│   ├── ast.rs            # AST node definitions, statements, and type system
+│   ├── lexer.rs          # Token scanner with line/col and escape sequences
+│   ├── parser.rs         # Recursive-descent grammar parser with diagnostics
+│   └── loader.rs         # Recursive multi-file import resolver
+├── compiler/             # High-Performance SSA & Type Inference Pipeline
+│   ├── types.rs          # Hindley-Milner type system & TypeSchemes
+│   ├── infer.rs          # Algorithm W type unification and occurs check
+│   ├── mir.rs            # Virtual SSA registers (%0, %1) & Control Flow Graph
+│   ├── mir_builder.rs    # AST to SSA IR lowering pass
+│   ├── mir_opt.rs        # Constant folding, DCE, inlining & escape analysis
+│   ├── mir_llvm.rs       # Native LLVM IR emitter
+│   ├── mir_transpile.rs  # High-performance ISO C99 emitter
+│   ├── lsp.rs            # Language Server Protocol daemon
+│   ├── bifurcator.rs     # Static vs dynamic stack partitioning pass
+│   ├── static_engine.rs  # Unboxed static instruction set & frame executor
+│   └── vm.rs             # Dynamic bytecode chunk, OpCodes, and tagged values
+├── runtime/              # Execution Loop, Primitives & Standard Library
+│   ├── engine.rs         # Dual-stack runtime coordinator
+│   └── stdlib.rs         # 25+ built-in math, string, and collection primitives
+├── main.rs               # Rust CLI driver and file runner
+└── tests.rs              # Comprehensive unit and integration test suite
 ```
 
 ---
 
-## 1. Lexical Analysis (`src/lexer.rs`)
+## 2. Hindley-Milner Type Inference (Algorithm W)
 
-The lexical scanner transforms UTF-8 source text into a sequential vector of `Token` instances:
+Elaichi implements classical Hindley-Milner type inference in `src/compiler/types.rs` and `src/compiler/infer.rs`:
 
-* **Keywords**: `static`, `function`, `const`, `let`, `if`, `else`, `while`, `for`, `in`, `struct`, `return`, `as`, `break`, `continue`.
-* **Terminal Primitives**: `terminal`, `print`, `println`, `warn`, `error`, `clear`.
-* **Types**: `i64`, `f64`, `bool`, `string`.
-* **Operators**: `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, `..`.
-
----
-
-## 2. Parser Architecture (`src/parser.rs`)
-
-The parser uses a recursive-descent strategy combined with precedence climbing for binary expressions:
-
-* **Precedence Hierarchy**:
-  1. Primary expressions (literals, variables, grouped expressions)
-  2. Postfix expressions (indexing `arr[i]`, property access `obj.field`, calls `fn()`)
-  3. Prefix unary expressions (`!`, `-`)
-  4. Multiplicative expressions (`*`, `/`, `%`)
-  5. Additive expressions (`+`, `-`)
-  6. Relational comparisons (`<`, `<=`, `>`, `>=`)
-  7. Equality comparisons (`==`, `!=`)
-  8. Logical conjunction (`&&`)
-  9. Logical disjunction (`||`)
+* **Zero Boxing Overhead**: Types are inferred ahead of time without requiring mandatory user type annotations.
+* **Unification**: Structural equality unification with substitution composition ($S_2 \circ S_1$).
+* **Occurs Check**: Prevents infinite recursive types ($\tau = [\tau]$).
+* **Principal Types**: Resolves expressions to canonical CPU primitives (`i64`, `f64`, `bool`, `str`, `[T]`, `Fn(T) -> U`).
 
 ---
 
-## 3. Bifurcation Pass (`src/bifurcator.rs`)
+## 3. SSA Mid-Level IR (MIR)
 
-The bifurcator segregates the validated AST into static instruction streams and dynamic bytecode chunks:
+The SSA compiler (`src/compiler/mir.rs`) transforms high-level syntax into a basic-block Control Flow Graph:
 
-```rust
-pub struct Bifurcator {
-    pub static_functions: HashMap<String, (Function, StaticFunctionCode)>,
-    pub dynamic_functions: HashMap<String, (Function, DynamicBytecodeChunk)>,
-}
-```
-
-During compilation:
-* Loop jumps for `break` and `continue` statements are maintained on jump stacks (`break_jumps` and `continue_jumps`) and resolved to concrete bytecode indices upon loop completion.
-* Unboxed local variable slots are bound sequentially in `StaticFunctionCode.local_types`.
+* **Registers**: Infinite virtual registers (`%0`, `%1`, `%2`...) storing pure 64-bit machine words.
+* **Basic Blocks**: Linear sequences of instructions ending with a strict terminator (`Goto`, `Branch`, `Return`, `Unreachable`).
+* **Phi Nodes**: Merges converging values across conditional branches without memory reads.
 
 ---
 
-## 4. Cooperative Runtime Engine (`src/runtime.rs`)
+## 4. Compiler Optimization Passes (`src/compiler/mir_opt.rs`)
 
-The runtime coordinates memory, variable frames, and inter-stack boundary calls:
+1. **Constant Folding**: Pre-computes arithmetic and logical operations at compile-time (`4 * 5` $\to$ `20`).
+2. **Dead Code Elimination (DCE)**: Prunes unread registers and dead basic blocks.
+3. **Escape Analysis**: 
+   - Non-escaping lists/records are promoted directly to the CPU stack (`AllocStack`).
+   - Escaping values cross to ARC without stop-the-world GC pauses.
+4. **Leaf Function Inliner**: Inlines candidate functions directly into call sites to eliminate call-frame setup.
 
-```rust
-pub struct Runtime {
-    pub bifurcator: Bifurcator,
-    pub dyn_globals: HashMap<String, DynValue>,
-}
-```
+---
 
-Execution begins at the specified entry function (default `main`). When an opcode requires cross-stack communication:
-* The unboxing thunk converts dynamic tagged values (`DynValue`) into unboxed static variants (`StaticValue`).
-* Execution branches directly into `static_engine.rs`.
-* Upon completion, the static value is boxed back into a dynamic value and returned to the VM frame.
+## 5. Emission Backends
+
+* **LLVM IR Backend (`src/compiler/mir_llvm.rs`)**: Emits typed SSA LLVM IR matching the inkwell backend spec for native compilation.
+* **C99 Transpiler (`src/compiler/mir_transpile.rs`)**: Emits ANSI C code for compilation with GCC or Clang `-O3`.
+* **Dual-Stack Runtime**: Cooperative execution between unboxed native frames and dynamic bytecode chunks via `Bridge`.

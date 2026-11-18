@@ -152,9 +152,19 @@ Binary location: `target/release/elaichi`
 
 ### CLI Commands
 
-Run a source file:
+Run any source file or multi-file application:
 ```bash
 elaichi run app.el
+```
+
+Compile program to SSA LLVM IR (for native compilation via LLVM/inkwell):
+```bash
+elaichi emit-llvm app.el
+```
+
+Compile program to optimized ISO C99 code (for GCC/Clang -O3 builds):
+```bash
+elaichi emit-c app.el
 ```
 
 Dump AST bifurcation classification:
@@ -173,21 +183,37 @@ elaichi --version
 
 ```
 .
-├── compiler/
-│   ├── ast.rs            # AST definitions and nodes
-│   ├── bifurcator.rs     # AST partitioning into static vs dynamic IR
-│   ├── lexer.rs          # Token scanner
-│   ├── parser.rs         # Recursive descent parser
-│   ├── static_engine.rs  # Unboxed static instruction set
-│   └── vm.rs             # Dynamic bytecode VM and opcodes
-├── runtime/
-│   ├── bridge.rs         # Marshaling and unboxing thunks
-│   └── runtime.rs        # Stack execution coordinator
-├── docs/                 # Documentation website source
-├── examples/             # Sample source programs
-├── elaichi-logo.svg      # Official vector logo
-├── Cargo.toml
-└── README.md
+├── src/
+│   ├── frontend/         # Lexer, Parser, AST & Multi-File Module Loader
+│   │   ├── ast.rs
+│   │   ├── lexer.rs
+│   │   ├── parser.rs
+│   │   └── loader.rs
+│   ├── compiler/         # Native SSA & Type Inference Compiler Pipeline
+│   │   ├── types.rs          # Hindley-Milner Type System Core
+│   │   ├── infer.rs          # Algorithm W Inference Engine
+│   │   ├── mir.rs            # SSA Virtual Registers & Control Flow Graph
+│   │   ├── mir_builder.rs    # AST to SSA IR Lowering Pass
+│   │   ├── mir_opt.rs        # Constant Folding, Inlining & Escape Analysis
+│   │   ├── mir_llvm.rs       # Native LLVM IR Emitter
+│   │   ├── mir_transpile.rs  # High-Performance C99 Emitter
+│   │   ├── bifurcator.rs     # Dual-Stack Partitioning Pass
+│   │   ├── static_engine.rs  # Unboxed Static Stack Instructions
+│   │   └── vm.rs             # Tagged Dynamic Bytecode Virtual Machine
+│   ├── runtime/          # Execution Loop, Primitives & Standard Library
+│   │   ├── engine.rs         # Stack Coordinator
+│   │   └── stdlib.rs         # 25+ Built-in Math, String & Functional Primitives
+│   ├── main.rs           # Rust CLI Entry Point
+│   └── tests.rs          # Comprehensive Unit & Integration Test Suite
+├── bin/
+│   └── elaichi.js        # Global Standalone CLI Runner
+├── examples/             # Sample Programs & Multi-File Modules
+├── tests/                # Language Test Suites
+├── docs/                 # Documentation Website
+├── install.bat           # Global Windows One-Click Installer
+├── install.ps1           # Global PowerShell One-Click Installer
+├── package.json          # Global Package Manifest
+└── Cargo.toml            # Rust Workspace Manifest
 ```
 
 ---

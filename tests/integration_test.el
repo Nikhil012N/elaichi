@@ -97,7 +97,7 @@ function main() {
     let upper = toUpper("elaichi");
     let lower = toLower("RUNTIME");
     let hasPrefix = startsWith(upper, "ELA");
-    let hasSuffix = endsWith(lower, "ME");
+    let hasSuffix = endsWith(lower, "me");
     let replaced = replace("hello world", "world", "elaichi");
     let sortedList = sort([40, 10, 30, 20]);
     let currentEpoch = timeNow();

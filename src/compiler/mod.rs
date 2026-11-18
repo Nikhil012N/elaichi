@@ -1,9 +1,25 @@
 pub mod bifurcator;
 pub mod bridge;
+pub mod infer;
+pub mod lsp;
+pub mod mir;
+pub mod mir_builder;
+pub mod mir_llvm;
+pub mod mir_opt;
+pub mod mir_transpile;
 pub mod static_engine;
+pub mod types;
 pub mod vm;
 
 pub use bifurcator::Bifurcator;
 pub use bridge::Bridge;
+pub use infer::{TypeError, TypeInference};
+pub use lsp::LspServer;
+pub use mir::{BlockId, MirBinOp, MirBlock, MirConst, MirFunction, MirInst, MirModule, MirReg, MirTerminator};
+pub use mir_builder::{compile_function_to_mir, MirBuilder};
+pub use mir_llvm::LlvmIrEmitter;
+pub use mir_opt::{EscapeState, MirOptimizer};
+pub use mir_transpile::MirCTranspiler;
 pub use static_engine::{StaticFunctionCode, StaticInst, StaticValue};
+pub use types::{Substitution, Type, TypeEnv, TypeScheme};
 pub use vm::{DynValue, DynamicBytecodeChunk, OpCode};

@@ -1,0 +1,21 @@
+{
+  "name": "elaichi",
+  "version": "0.1.0",
+  "description": "The Elaichi dual-stack programming language compiler and runtime",
+  "bin": {
+    "elaichi": "./bin/elaichi.js"
+  },
+  "scripts": {
+    "test": "node bin/elaichi.js run tests/integration_test.el",
+    "example": "node bin/elaichi.js run examples/multi_file_app.el"
+  },
+  "keywords": [
+    "elaichi",
+    "compiler",
+    "interpreter",
+    "programming-language",
+    "dual-stack"
+  ],
+  "author": "Elaichi Core Team",
+  "license": "MIT"
+}

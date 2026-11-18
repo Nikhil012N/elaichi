@@ -292,3 +292,40 @@ pub fn run_all_self_tests() -> Result<(), String> {
     }
     Ok(())
 }
+
+
+#[cfg(test)]
+mod hindley_milner_tests {
+    use crate::compiler::{Type, TypeEnv, TypeInference};
+    use crate::frontend::ast::Expr;
+
+    #[test]
+    fn test_hindley_milner_inference() {
+        let mut ti = TypeInference::new();
+        let env = TypeEnv::new();
+
+        // Literal Int
+        let (_, int_ty) = ti.infer_expr(&env, &Expr::IntLit(42)).unwrap();
+        assert_eq!(int_ty, Type::Int);
+
+        // Homogeneous list: [1, 2, 3] -> [i64]
+        let list_expr = Expr::ListLit(vec![Expr::IntLit(1), Expr::IntLit(2), Expr::IntLit(3)]);
+        let (_, list_ty) = ti.infer_expr(&env, &list_expr).unwrap();
+        assert_eq!(list_ty, Type::List(Box::new(Type::Int)));
+
+        // Builtin sqrt(16.0) -> f64
+        let sqrt_call = Expr::Call {
+            callee: "sqrt".to_string(),
+            args: vec![Expr::FloatLit(16.0)],
+        };
+        let (_, sqrt_ty) = ti.infer_expr(&env, &sqrt_call).unwrap();
+        assert_eq!(sqrt_ty, Type::Float);
+
+        // Type mismatch: sqrt(42) fails
+        let bad_call = Expr::Call {
+            callee: "sqrt".to_string(),
+            args: vec![Expr::IntLit(42)],
+        };
+        assert!(ti.infer_expr(&env, &bad_call).is_err());
+    }
+}

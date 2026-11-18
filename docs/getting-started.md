@@ -1,40 +1,43 @@
 # Getting Started
 
-This guide walks you step-by-step through setting up Elaichi on your computer and running your first program.
+This guide walks you step-by-step through installing Elaichi globally, writing code, and compiling or running your programs.
 
 ---
 
-## 1. What You Need
+## 1. Quick Global Installation
 
-Elaichi compiles to a single, standalone executable file (`elaichi.exe` on Windows, or `elaichi` on Linux/Mac). 
+Elaichi comes with a zero-friction global installer for Windows, macOS, and Linux.
 
-If you want to build it from the source code, you only need the standard Rust tool:
-* [Download Rust](https://www.rust-lang.org/tools/install) (this includes `cargo` and `rustc`).
+### Windows (PowerShell or Command Prompt)
+Run the one-click installer script in the Elaichi root directory:
+```powershell
+# Using PowerShell
+.\install.ps1
+
+# Or using Command Prompt (.bat)
+install.bat
+```
+
+### Via npm (Universal)
+If you have Node.js / npm installed:
+```bash
+npm install -g .
+```
+
+Once installed, the `elaichi` command is available everywhere in your terminal. Verify with:
+```bash
+elaichi --version
+```
+*Output:*
+```text
+Elaichi v0.1.0 (Dual-Stack Engine)
+```
 
 ---
 
-## 2. Compiling the Elaichi Runner
+## 2. Writing Your First Program
 
-1. Open your terminal or command prompt and clone the repository:
-   ```bash
-   git clone https://github.com/Nikhil012N/elaichi.git
-   cd elaichi
-   ```
-
-2. Build the project using Cargo:
-   ```bash
-   cargo build --release
-   ```
-
-3. Your standalone binary is now ready inside `target/release/`:
-   * **Windows**: `target/release/elaichi.exe`
-   * **Linux & macOS**: `target/release/elaichi`
-
----
-
-## 3. Writing Your First Program
-
-Create a new file called `hello.el` in your project folder:
+Create a file named `hello.el`:
 
 ```javascript
 function main() {
@@ -53,16 +56,12 @@ function main() {
 
 ---
 
-## 4. Running Your Program
+## 3. Running Your Program
 
-Use the `elaichi run` command followed by the filename:
+Execute your `.el` file using the `run` command:
 
 ```bash
-# Windows
-.\target\release\elaichi.exe run hello.el
-
-# Linux & macOS
-./target/release/elaichi run hello.el
+elaichi run hello.el
 ```
 
 **Output:**
@@ -76,15 +75,35 @@ Liftoff!
 
 ---
 
-## 5. Helpful Commands
+## 4. Native Compilation Commands
 
-### Check the Version
+Elaichi includes multiple compilation targets to achieve bare-metal C and Rust speed:
+
+### Compile to LLVM IR (Machine Code Backend)
+Turn your unboxed code into typed SSA LLVM IR for native execution via LLVM/inkwell:
 ```bash
-elaichi --version
+elaichi emit-llvm hello.el
 ```
 
-### See How the Compiler Splits Your Code
-Elaichi includes a command called `dump-ast` that lets you see which functions are running in high-speed static mode versus normal dynamic mode:
+### Compile to Optimized C99
+Generate clean, vectorized C99 source code for Clang or GCC `-O3` compilation:
+```bash
+elaichi emit-c hello.el
+```
+
+### Inspect Bifurcation Classification
+See how the compiler partitions your functions between the high-speed static stack and the dynamic stack:
 ```bash
 elaichi dump-ast hello.el
 ```
+
+---
+
+## 5. Editor Support: Language Server Protocol (LSP)
+
+Elaichi includes a built-in JSON-RPC 2.0 LSP daemon. To configure your editor (VS Code, Neovim, Helix, Sublime Text) to automatically validate types and diagnostics:
+
+```bash
+elaichi lsp
+```
+Configure your editor's LSP client to spawn `elaichi lsp` on `.el` files.

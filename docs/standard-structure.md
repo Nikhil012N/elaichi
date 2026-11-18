@@ -48,10 +48,19 @@ src/
 ├── frontend/             # Lexical analysis & AST generation
 │   ├── mod.rs
 │   ├── ast.rs            # Typed AST node definitions
-│   ├── lexer.rs          # Token scanner with byte spans
-│   └── parser.rs         # Recursive-descent grammar parser
-├── compiler/             # AST Bifurcation & Code Generation
+│   ├── lexer.rs          # Token scanner with byte spans & escape characters
+│   ├── parser.rs         # Recursive-descent grammar parser with diagnostics
+│   └── loader.rs         # Multi-file module loader and cycle detector
+├── compiler/             # High-Performance SSA & Type Inference Engine
 │   ├── mod.rs
+│   ├── types.rs          # Hindley-Milner type system & TypeSchemes
+│   ├── infer.rs          # Algorithm W type unification and occurs check
+│   ├── mir.rs            # Virtual SSA registers (%0, %1) & Control Flow Graph
+│   ├── mir_builder.rs    # AST to SSA IR lowering pass
+│   ├── mir_opt.rs        # Constant folding, DCE, inlining & escape analysis
+│   ├── mir_llvm.rs       # Native LLVM IR emitter
+│   ├── mir_transpile.rs  # High-performance ISO C99 emitter
+│   ├── lsp.rs            # Language Server Protocol daemon
 │   ├── bifurcator.rs     # Dual-track classifier & bytecode emitter
 │   ├── bridge.rs         # Zero-cost dynamic <-> static marshaller
 │   ├── static_engine.rs  # Unboxed CPU register instructions

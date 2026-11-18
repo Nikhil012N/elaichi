@@ -153,7 +153,15 @@ pub struct Function {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct ImportStmt {
+    pub path: String,
+    pub line: usize,
+    pub col: usize,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Program {
+    pub imports: Vec<ImportStmt>,
     pub structs: Vec<StructDef>,
     pub functions: Vec<Function>,
 }
