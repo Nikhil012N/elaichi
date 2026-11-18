@@ -1,16 +1,10 @@
-pub mod ast;
-pub mod bifurcator;
-pub mod bridge;
-pub mod lexer;
-pub mod parser;
+pub mod compiler;
+pub mod frontend;
 pub mod runtime;
-pub mod static_engine;
-pub mod vm;
 pub mod tests;
 
-use bifurcator::Bifurcator;
-use lexer::Lexer;
-use parser::Parser;
+use compiler::Bifurcator;
+use frontend::{Lexer, Parser};
 use runtime::Runtime;
 use std::env;
 use std::fs;

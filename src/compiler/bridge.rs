@@ -1,6 +1,6 @@
-use crate::ast::ElaichiType;
-use crate::static_engine::StaticValue;
-use crate::vm::DynValue;
+use crate::frontend::ElaichiType;
+use super::static_engine::StaticValue;
+use super::vm::DynValue;
 
 pub struct Bridge;
 

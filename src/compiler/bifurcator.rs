@@ -1,8 +1,9 @@
-use crate::ast::*;
-use crate::static_engine::{StaticFunctionCode, StaticInst};
-use crate::vm::{DynamicBytecodeChunk, DynValue, OpCode};
+use crate::frontend::*;
+use super::static_engine::{StaticFunctionCode, StaticInst};
+use super::vm::{DynamicBytecodeChunk, DynValue, OpCode};
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct Bifurcator {
     pub structs: HashMap<String, StructDef>,
     pub static_functions: HashMap<String, (Function, StaticFunctionCode)>,

@@ -558,46 +558,45 @@
       border-color: #444444 !important;
     }
 
-    /* Dracula Palette Dark Engine Tables (Text Coloring) */
+    /* ==========================================================================
+       MODERN PROFESSIONAL DEV-DOCS TABLES (Linear / Vercel Standard)
+       ========================================================================== */
     .markdown-section table {
-      display: block !important;
-      overflow-x: auto !important;
-      -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
-      border-radius: 4px !important;
-      border: 1px solid #222222 !important;
+      display: table !important;
+      border-collapse: collapse !important;
       border-spacing: 0 !important;
-      border-collapse: separate !important;
       margin: 32px 0 !important;
-      background: #000000 !important;
-    }
-
-    .markdown-section table th,
-    .markdown-section table td {
-      white-space: nowrap !important;
+      font-size: 0.875rem !important;
+      line-height: 1.6 !important;
+      text-align: left !important;
+      border: 1px solid var(--border-subtle) !important;
+      border-radius: 6px !important;
+      background: #0d0d0e !important;
+      overflow: hidden !important;
     }
 
     .markdown-section table th {
-      background: #0a0a0a !important;
-      color: #bd93f9 !important; /* Dracula Purple */
-      font-weight: 700 !important;
-      font-size: 0.86rem !important;
-      letter-spacing: 0.04em !important;
+      color: #a1a1aa !important; /* Muted zinc-400 */
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      padding: 12px 18px !important;
+      background: #121215 !important;
       border: none !important;
-      border-bottom: 1px solid #222222 !important;
-      padding: 14px 20px !important;
-      text-align: left !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+      white-space: nowrap !important;
     }
 
     .markdown-section table td {
-      background: #000000 !important;
-      color: #f8f8f2 !important; /* Dracula Foreground */
+      padding: 13px 18px !important;
+      color: #d4d4d8 !important; /* High-readability zinc-300 */
+      background: transparent !important;
       border: none !important;
-      border-bottom: 1px solid #1a1a1a !important;
-      padding: 13px 20px !important;
-      font-size: 0.88rem !important;
-      line-height: 1.6 !important;
-      transition: background 0.12s ease !important;
+      border-bottom: 1px solid #1a1a1e !important;
+      vertical-align: middle !important;
+      transition: background 0.15s ease !important;
     }
 
     .markdown-section table tr:last-child td {
@@ -605,42 +604,29 @@
     }
 
     .markdown-section table tr:hover td {
-      background: #0f0f11 !important;
+      background: #141418 !important;
+      color: #ffffff !important;
     }
 
-    .markdown-section table td strong {
-      color: #ff79c6 !important; /* Dracula Pink */
-      font-weight: 600 !important;
+    /* Professional Code Spans in Tables */
+    .markdown-section table code {
+      font-family: var(--code-font) !important;
+      font-size: 0.8125rem !important;
+      color: #e4e4e7 !important;
+      background: #18181c !important;
+      border: 1px solid #27272e !important;
+      padding: 2.5px 7px !important;
+      border-radius: 4px !important;
+      font-weight: 500 !important;
+      white-space: nowrap !important;
     }
 
-    /* First column function / type names - Dracula Green text */
-    .markdown-section table td:first-child {
-      color: #50fa7b !important; /* Dracula Green */
-    }
-
+    /* First column function names get subtle accentuation */
     .markdown-section table td:first-child code {
-      color: #50fa7b !important; /* Dracula Green */
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
+      color: #f472b6 !important; /* Clean Pink Accent */
+      border-color: rgba(244, 114, 182, 0.25) !important;
+      background: rgba(244, 114, 182, 0.06) !important;
       font-weight: 600 !important;
-    }
-
-    /* Second column description text - Dracula Soft Foreground */
-    .markdown-section table td:nth-child(2) {
-      color: #f8f8f2 !important;
-    }
-
-    /* Third / Last column examples - Dracula Cyan text */
-    .markdown-section table td:last-child {
-      color: #8be9fd !important; /* Dracula Cyan */
-    }
-
-    .markdown-section table td:last-child code {
-      color: #8be9fd !important; /* Dracula Cyan */
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
     }
 
     /* Typography Hierarchy & High-Contrast Clean Headings */

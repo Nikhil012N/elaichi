@@ -90,7 +90,7 @@ pub enum OpCode {
     IndexSet,
     FieldGet(String),
     FieldSet(String),
-    Cast(crate::ast::ElaichiType),
+    Cast(crate::frontend::ElaichiType),
     Add,
     Sub,
     Mul,

@@ -1,4 +1,4 @@
-use crate::ast::ElaichiType;
+use crate::frontend::ElaichiType;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum StaticValue {

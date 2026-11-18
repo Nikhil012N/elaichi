@@ -1,8 +1,6 @@
-use crate::bifurcator::Bifurcator;
-use crate::lexer::Lexer;
-use crate::parser::Parser;
+use crate::compiler::{Bifurcator, DynValue};
+use crate::frontend::{Lexer, Parser};
 use crate::runtime::Runtime;
-use crate::vm::DynValue;
 
 pub fn run_code(src: &str) -> Result<DynValue, String> {
     let mut lexer = Lexer::new(src);

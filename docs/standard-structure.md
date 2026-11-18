@@ -39,29 +39,29 @@ my-app/
 
 ---
 
-## 2. Compiler Pipeline Architecture
+## 2. Compiler Pipeline & Source Code Architecture
 
-The Elaichi compiler and runtime are structured into five core stages:
+The Elaichi compiler and runtime are structured into three professional, decoupled engine modules:
 
 ```text
-.el Source Code
-      │
-      ▼
-1. Frontend Scanner (Lexer)
-      │  Tokens with line/column byte spans
-      ▼
-2. Recursive Descent Parser
-      │  Typed Abstract Syntax Tree (AST)
-      ▼
-3. AST Bifurcator
-      ├── Static Branch   ──► Native / Unboxed Register Engine
-      └── Dynamic Branch  ──► Stack Bytecode VM
-      ▲
-      │
-4. Inter-Stack Bridge
-      │  Zero-cost unboxing & bidirectional marshalling
-      ▼
-5. Unified Runtime Engine
+src/
+├── frontend/             # Lexical analysis & AST generation
+│   ├── mod.rs
+│   ├── ast.rs            # Typed AST node definitions
+│   ├── lexer.rs          # Token scanner with byte spans
+│   └── parser.rs         # Recursive-descent grammar parser
+├── compiler/             # AST Bifurcation & Code Generation
+│   ├── mod.rs
+│   ├── bifurcator.rs     # Dual-track classifier & bytecode emitter
+│   ├── bridge.rs         # Zero-cost dynamic <-> static marshaller
+│   ├── static_engine.rs  # Unboxed CPU register instructions
+│   └── vm.rs             # Tagged dynamic VM opcodes & value types
+├── runtime/              # Execution engine & Standard Library
+│   ├── mod.rs
+│   ├── engine.rs         # Execution dispatcher & stack frame loops
+│   └── stdlib.rs         # Standard library functions & collections
+├── tests.rs              # Self-testing validation test suite
+└── main.rs               # Command-line interface (CLI)
 ```
 
 ---
