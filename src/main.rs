@@ -6,9 +6,7 @@ pub mod parser;
 pub mod runtime;
 pub mod static_engine;
 pub mod vm;
-
-#[cfg(test)]
-mod tests;
+pub mod tests;
 
 use bifurcator::Bifurcator;
 use lexer::Lexer;
@@ -41,6 +39,13 @@ fn main() {
             }
             dump_ast(&args[2]);
         }
+        "test" => {
+            println!("=== Running Elaichi Engine Verification Suite ===");
+            match tests::run_all_self_tests() {
+                Ok(_) => println!("All tests completed successfully."),
+                Err(err) => eprintln!("Test failure: {}", err),
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Elaichi v0.1.0-dev (Dual-Stack Engine)");
         }
@@ -54,6 +59,7 @@ fn print_usage() {
     println!("Elaichi Programming Language CLI");
     println!("Usage:");
     println!("  elaichi run <file.el>       Execute program on the dual-stack runtime");
+    println!("  elaichi test                Execute built-in engine verification suite");
     println!("  elaichi dump-ast <file.el>  Parse and dump AST bifurcation classification");
     println!("  elaichi --version           Print version");
 }

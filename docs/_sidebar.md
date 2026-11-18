@@ -1,5 +1,6 @@
 * [Welcome](README.md)
 * [Getting Started](getting-started.md)
+* [Standard Structure](standard-structure.md)
 * [How It Works](architecture.md)
 * [Language Reference](language-reference.md)
 * [Compiler Internals](compiler-internals.md)

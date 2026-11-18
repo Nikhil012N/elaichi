@@ -471,19 +471,36 @@ impl Bifurcator {
             Expr::Binary { op, left, right } => {
                 self.compile_static_expr(left, code, local_map)?;
                 self.compile_static_expr(right, code, local_map)?;
-                match op {
-                    BinaryOp::Add => code.code.push(StaticInst::I64Add),
-                    BinaryOp::Sub => code.code.push(StaticInst::I64Sub),
-                    BinaryOp::Mul => code.code.push(StaticInst::I64Mul),
-                    BinaryOp::Div => code.code.push(StaticInst::I64Div),
-                    BinaryOp::Mod => code.code.push(StaticInst::I64Mod),
-                    BinaryOp::Equal => code.code.push(StaticInst::I64Eq),
-                    BinaryOp::NotEqual => code.code.push(StaticInst::I64Neq),
-                    BinaryOp::Less => code.code.push(StaticInst::I64Lt),
-                    BinaryOp::LessEqual => code.code.push(StaticInst::I64Le),
-                    BinaryOp::Greater => code.code.push(StaticInst::I64Gt),
-                    BinaryOp::GreaterEqual => code.code.push(StaticInst::I64Ge),
-                    _ => return Err(format!("Unsupported binary op in static expr: {:?}", op)),
+                let is_float = self.expr_is_float(left, local_map) || self.expr_is_float(right, local_map);
+                if is_float {
+                    match op {
+                        BinaryOp::Add => code.code.push(StaticInst::F64Add),
+                        BinaryOp::Sub => code.code.push(StaticInst::F64Sub),
+                        BinaryOp::Mul => code.code.push(StaticInst::F64Mul),
+                        BinaryOp::Div => code.code.push(StaticInst::F64Div),
+                        BinaryOp::Equal => code.code.push(StaticInst::F64Eq),
+                        BinaryOp::NotEqual => code.code.push(StaticInst::F64Neq),
+                        BinaryOp::Less => code.code.push(StaticInst::F64Lt),
+                        BinaryOp::LessEqual => code.code.push(StaticInst::F64Le),
+                        BinaryOp::Greater => code.code.push(StaticInst::F64Gt),
+                        BinaryOp::GreaterEqual => code.code.push(StaticInst::F64Ge),
+                        _ => return Err(format!("Unsupported float op in static expr: {:?}", op)),
+                    }
+                } else {
+                    match op {
+                        BinaryOp::Add => code.code.push(StaticInst::I64Add),
+                        BinaryOp::Sub => code.code.push(StaticInst::I64Sub),
+                        BinaryOp::Mul => code.code.push(StaticInst::I64Mul),
+                        BinaryOp::Div => code.code.push(StaticInst::I64Div),
+                        BinaryOp::Mod => code.code.push(StaticInst::I64Mod),
+                        BinaryOp::Equal => code.code.push(StaticInst::I64Eq),
+                        BinaryOp::NotEqual => code.code.push(StaticInst::I64Neq),
+                        BinaryOp::Less => code.code.push(StaticInst::I64Lt),
+                        BinaryOp::LessEqual => code.code.push(StaticInst::I64Le),
+                        BinaryOp::Greater => code.code.push(StaticInst::I64Gt),
+                        BinaryOp::GreaterEqual => code.code.push(StaticInst::I64Ge),
+                        _ => return Err(format!("Unsupported binary op in static expr: {:?}", op)),
+                    }
                 }
             }
             Expr::Call { callee, args } => {
@@ -495,5 +512,22 @@ impl Bifurcator {
             _ => return Err(format!("Invalid static expression: {:?}", expr)),
         }
         Ok(())
+    }
+
+    fn expr_is_float(&self, expr: &Expr, local_map: &HashMap<String, usize>) -> bool {
+        match expr {
+            Expr::FloatLit(_) => true,
+            Expr::Var(name) => {
+                if let Some(&_idx) = local_map.get(name) {
+                    false
+                } else {
+                    false
+                }
+            }
+            Expr::Binary { left, right, .. } => {
+                self.expr_is_float(left, local_map) || self.expr_is_float(right, local_map)
+            }
+            _ => false,
+        }
     }
 }

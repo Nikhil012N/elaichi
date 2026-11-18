@@ -180,14 +180,38 @@ Instead of `console.log`, Elaichi provides native `terminal` commands:
 
 ## 8. Built-in Helper Functions
 
-* **`len(target)`**: Returns how many items are in a list, text, or dictionary.
-  ```javascript
-  len(["a", "b", "c"]); // returns 3
-  ```
-* **`push(list, item)`**: Adds an item to the end of a list.
-* **`keys(dictionary)`**: Returns a list of all key names in a dictionary.
-* **`values(dictionary)`**: Returns a list of all values in a dictionary.
-* **`contains(collection, item)`**: Checks if a list contains an item or if text contains a sub-word. Returns `true` or `false`.
-* **`abs(number)`**: Turns negative numbers into positive numbers (e.g. `abs(-5)` becomes `5`).
-* **`min(a, b)`**: Returns the smaller of two numbers.
-* **`max(a, b)`**: Returns the larger of two numbers.
+Elaichi standardizes all identifiers using **camelCase** for variables and functions, and **PascalCase** for Types and Structs:
+
+| Function | Description | Example |
+| :--- | :--- | :--- |
+| `typeOf(val)` | Returns the runtime type as a string | `typeOf(42)` -> `"int"` |
+| `toUpper(str)` | Converts string to uppercase | `toUpper("hello")` -> `"HELLO"` |
+| `toLower(str)` | Converts string to lowercase | `toLower("WORLD")` -> `"world"` |
+| `startsWith(str, prefix)` | Checks string prefix | `startsWith("elaichi", "el")` -> `true` |
+| `endsWith(str, suffix)` | Checks string suffix | `endsWith("elaichi", "chi")` -> `true` |
+| `replace(str, from, to)` | Replaces occurrences in string | `replace("a-b", "-", "+")` -> `"a+b"` |
+| `split(str, sep)` | Splits string into a list | `split("a,b", ",")` -> `["a", "b"]` |
+| `join(list, sep)` | Joins list items into string | `join(["a", "b"], ":")` -> `"a:b"` |
+| `slice(coll, start, end)` | Slices a list or string | `slice([1, 2, 3], 0, 2)` -> `[1, 2]` |
+| `reverse(coll)` | Reverses a list or string | `reverse([1, 2, 3])` -> `[3, 2, 1]` |
+| `trim(str)` | Removes leading/trailing spaces | `trim("  hi  ")` -> `"hi"` |
+| `sort(list)` | Sorts a list in ascending order | `sort([3, 1, 2])` -> `[1, 2, 3]` |
+| `timeNow()` | Current timestamp in milliseconds | `timeNow()` -> `1700000000000` |
+| `sqrt(n)` | Computes square root | `sqrt(144.0)` -> `12.0` |
+| `pow(base, exp)` | Computes base to exponent power | `pow(2.0, 8.0)` -> `256.0` |
+| `floor(n)` | Truncates to lower integer | `floor(3.9)` -> `3` |
+| `ceil(n)` | Rounds up to upper integer | `ceil(3.1)` -> `4` |
+| `round(n)` | Rounds to nearest integer | `round(4.6)` -> `5` |
+| `abs(n)` | Turns negative numbers into positive | `abs(-5)` -> `5` |
+| `min(a, b)` | Returns the smaller of two numbers | `min(10, 20)` -> `10` |
+| `max(a, b)` | Returns the larger of two numbers | `max(10, 20)` -> `20` |
+| `len(coll)` | Returns count of items or length | `len([1, 2])` -> `2` |
+| `push(list, item)` | Adds an item to the end of a list | `push([1], 2)` -> `[1, 2]` |
+| `filter(list, fnName)` | Filters elements matching predicate function | `filter([1, 2], "isEven")` -> `[2]` |
+| `mapList(list, fnName)` | Maps list elements through transform function | `mapList([1, 2], "doubleNum")` -> `[2, 4]` |
+| `reduce(list, fnName, initial)` | Accumulates list into a single value | `reduce([1, 2, 3], "sum", 0)` -> `6` |
+| `clamp(val, min, max)` | Constrains value between min and max bounds | `clamp(150, 0, 100)` -> `100` |
+| `find(list, fnName)` | Returns first element matching predicate | `find([1, 2], "isEven")` -> `2` |
+| `keys(dict)` | Returns list of key names in a map | `keys(user)` -> `["id", "name"]` |
+| `values(dict)` | Returns list of values in a map | `values(user)` -> `[1, "Alex"]` |
+| `contains(coll, item)` | Checks item or substring membership | `contains(list, "a")` -> `true` |
